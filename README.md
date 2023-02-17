@@ -38,12 +38,9 @@ here is an example of a sketch and the final result
 
 # :video_camera: Demo
 
+Here is a simple demo of the current functionality
 
-
- <video height=400 loop>
-  <source height=400 src="README/demo.webm">
-  Your browser does not support the video tag.
-</video> 
+<img height=400 src="README/demo.gif" alt="demo">
 
 # :clipboard: Todo
 
@@ -52,4 +49,4 @@ here is an example of a sketch and the final result
 - [x] Add interactive functionalities
 - [ ] Integrate Ble lib
 - [ ] Finish integration with 
-- [ ] ESP32-COOP-DOOR-CORE](https://github.com/ESP32-COOP/ESP32-COOP-DOOR-CORE)
+- [ ] [ESP32-COOP-DOOR-CORE](https://github.com/ESP32-COOP/ESP32-COOP-DOOR-CORE)
