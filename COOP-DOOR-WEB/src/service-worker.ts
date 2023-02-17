@@ -6,9 +6,6 @@
 const sw = /** @type {ServiceWorkerGlobalScope} */ (/** @type {unknown} */ (self));
 import { build, files, version } from '$service-worker';
 
-
-
-
 const worker = self as unknown as ServiceWorkerGlobalScope;
 const STATIC_CACHE_NAME = `cache${version}`;
 const APP_CACHE_NAME = `offline${version}`;
@@ -29,7 +26,7 @@ const addDomain = (assets: string[]) =>
 // also, we add the domain to our assets, so we can differentiate routes of our
 // app from those of other apps that we cache
 const ourAssets = addDomain([
-  ...files,
+  ...files.filter((f) => !/\/icons\/(apple.*?|original.png)/.test(f)),
   ...build,
   ...routes,
 ]);
@@ -128,7 +125,7 @@ worker.addEventListener("fetch", (event) => {
 //   ...files  // everything in `static`
 // ];
  
-// self.addEventListener('install', (event) => {
+// worker.addEventListener('install', (event) => {
 //   // Create a new cache and add all files to it
 //   async function addFilesToCache() {
 //     const cache = await caches.open(CACHE);
@@ -138,7 +135,7 @@ worker.addEventListener("fetch", (event) => {
 //   event.waitUntil(addFilesToCache());
 // });
  
-// self.addEventListener('activate', (event) => {
+// worker.addEventListener('activate', (event) => {
 //   // Remove previous cached data from disk
 //   async function deleteOldCaches() {
 //     for (const key of await caches.keys()) {
@@ -149,7 +146,7 @@ worker.addEventListener("fetch", (event) => {
 //   event.waitUntil(deleteOldCaches());
 // });
  
-// self.addEventListener('fetch', (event) => {
+// worker.addEventListener('fetch', (event) => {
 //   // ignore POST requests etc
 //   if (event.request.method !== 'GET') return;
  

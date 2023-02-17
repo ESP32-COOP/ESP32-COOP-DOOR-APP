@@ -147,7 +147,7 @@
 							<!--mozila sepcial orient="vertical" -->
 							<div class="absolute flex h-full w-full flex-col justify-end p-2">
 								<div
-									class="w-full rounded-xl bg-slate-500"
+									class="w-full rounded-xl bg-slate-500 transition-all"
 									style="height: {settings.door.nbTurn * 10}%;"
 								/>
 							</div>
