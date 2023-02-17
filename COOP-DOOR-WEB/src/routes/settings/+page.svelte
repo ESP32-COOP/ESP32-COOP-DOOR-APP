@@ -10,6 +10,7 @@
 	};
 	let page: string | null = 'close';
 	page = sessionStorage.getItem('page');
+	page = page == null ? 'close' : page;
 
 	$: sessionStorage.setItem('page', page == null ? 'close' : page);
 
@@ -132,19 +133,23 @@
 					style="grid-template-columns : 1fr 1.5fr ;"
 				>
 					<div class="grid h-full w-full grid-cols-1 gap-5" style="grid-template-rows: 4fr 1fr">
-						<div class="flex items-center  justify-center rounded-xl bg-slate-50 relative">
+						<div class="relative flex  items-center justify-center rounded-xl bg-slate-50">
 							<input
 								bind:value={settings.door.nbTurn}
 								min="1"
 								max="10"
 								step="0.2"
 								type="range"
-								class="h-full w-full   opacity-0 z-10 "
+								class="z-10 h-full   w-full opacity-0 "
 								style=" -webkit-appearance: slider-vertical;"
 								orient="vertical" 
 							/>
-							<div class="absolute w-full h-full p-2 flex flex-col justify-end">
-								<div class="rounded-xl w-full bg-slate-500" style="height: { settings.door.nbTurn*10}%;"></div>
+							<!--mozila sepcial orient="vertical" -->
+							<div class="absolute flex h-full w-full flex-col justify-end p-2">
+								<div
+									class="w-full rounded-xl bg-slate-500"
+									style="height: {settings.door.nbTurn * 10}%;"
+								/>
 							</div>
 						</div>
 						<div class="flex flex-col items-center justify-center rounded-xl bg-slate-50">
