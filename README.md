@@ -29,7 +29,7 @@ Here are the settings that the app allow you to edit on the coop door:
     - status open / close / auto
 
 # :arrows_counterclockwise: Workflow
-here is an example of a sketch and the final result
+here is an example of a sketch and the final result :
 
 <div>
 <img height=400 src="README/sketch.png" alt="sketch">
