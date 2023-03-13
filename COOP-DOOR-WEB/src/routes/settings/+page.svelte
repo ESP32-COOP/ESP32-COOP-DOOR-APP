@@ -142,7 +142,7 @@
 								type="range"
 								class="z-10 h-full   w-full opacity-0 "
 								style=" -webkit-appearance: slider-vertical;"
-								orient="vertical" 
+					
 							/>
 							<!--mozila sepcial orient="vertical" -->
 							<div class="absolute flex h-full w-full flex-col justify-end p-2">
