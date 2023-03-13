@@ -2,7 +2,7 @@ import { BLE } from '../../stores';
 import { onDestroy, onMount } from 'svelte';
 
 
-let  localBLE : BLEType;
+export let  localBLE : BLEType;
 
 const unsubscribe = BLE.subscribe((value) => localBLE = value)
 
