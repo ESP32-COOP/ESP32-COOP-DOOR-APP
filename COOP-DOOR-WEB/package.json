@@ -36,6 +36,7 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"@types/web-bluetooth": "^0.0.16",
 		"svelte-adapter-github": "^1.0.0-next.0",
 		"vercel": "^28.15.4"
 	}
