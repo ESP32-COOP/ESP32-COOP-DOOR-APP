@@ -6,15 +6,20 @@ let  localBLE : BLEType;
 
 const unsubscribe = BLE.subscribe((value) => localBLE = value)
 
+function updateBLE() {
+    // Update the BLE store with the new value
+    BLE.set(localBLE);
+  }
+
 
 export interface BLEType {
-    device: BluetoothDevice;
-    GATT:BluetoothRemoteGATTServer,
-    deviceName: string;
+    device?: BluetoothDevice,
+    GATT?:BluetoothRemoteGATTServer,
+    deviceName: string,
     serviceUUID: BluetoothServiceUUID,
-    service: BluetoothRemoteGATTService,
+    service?: BluetoothRemoteGATTService,
     dateCharUUID: BluetoothCharacteristicUUID,
-    dateChar: BluetoothRemoteGATTCharacteristic,
+    dateChar?: BluetoothRemoteGATTCharacteristic,
 }
 
 
@@ -28,7 +33,7 @@ export function iSWebBLEAvailable() {
 
 }
 
-export function getDeviceInfo() {
+export async function getDeviceInfo() {
     let options = {
         //acceptAllDevices: true,
         optionalServices: [localBLE.serviceUUID, localBLE.dateCharUUID],
@@ -39,26 +44,86 @@ export function getDeviceInfo() {
 
     console.log("Requestion BLE device info...")
 
-    return navigator.bluetooth.requestDevice(options).then(device => {
+    try {
+        const device = await navigator.bluetooth.requestDevice(options);
         localBLE.device = device;
         console.log('name ' + device.name);
-    }).catch(error => {
+        updateBLE();
+    } catch (error) {
         console.log('Request device error: ' + error);
-    })
+    }
 }
 
 
-export async function connectGATT2() {
-    if (localBLE.device.gatt != undefined ){
+export async function connectGATT() {
+    if (localBLE.device != undefined && localBLE.device.gatt != undefined ){
         console.log("device status",localBLE.device.gatt.connected)
         localBLE.GATT = await localBLE.device.gatt.connect()
     }
+    if (localBLE.GATT != undefined){
+        localBLE.service = await localBLE.GATT.getPrimaryService(localBLE.serviceUUID);
+        localBLE.dateChar = await localBLE.service.getCharacteristic(localBLE.dateCharUUID);
+        updateBLE();
+    }
     
 
-    localBLE.service = await localBLE.GATT.getPrimaryService(localBLE.serviceUUID);
+}
 
-    localBLE.dateChar = await localBLE.service.getCharacteristic(localBLE.dateCharUUID);
+export async function isDeviceConnected(){
+    if (localBLE.device != undefined && localBLE.device.gatt != undefined) return await localBLE.device.gatt.connect()
+    return false
+}
+
+
+export async function readDate() {
+    if (localBLE.dateChar){
+        const dump = await localBLE.dateChar.readValue()
+        return getLongFromBytesBuffer(dump)
+    }
+    
+}
+
+
+export async function writeDate(){
+    if (localBLE.dateChar){
+        let now =  Math.round(Date.now() / 1000); //Date.now();
+        let bytes: number[] = getBytesFromLong(now);
+        console.log(now,bytes,getLongFromBytes(bytes))
+        let buffer = new Uint8Array(bytes).buffer;
+        await localBLE.dateChar.writeValue(buffer);
+        return true
+
+    }
+    return false;
+}
+
+
+export function getBytesFromLong(x: number) : Array<number> {
+  let bytes = new Array(8);
+  for (let i = 0; i < 8; i++) {
+    bytes[i] = x & 0xff;
+    x = (x - bytes[i]) / 256;
+  }
+  return bytes;
+}
 
 
 
+
+
+export function getLongFromBytes(bytes: number[]) {
+  let result = 0;
+  for (let i = 7; i >= 0; i--) {
+    result = (result * 256) + bytes[i];
+  }
+  return result;
+}
+
+
+export function getLongFromBytesBuffer(bytes: DataView) {
+  let result = 0;
+  for (let i = 7; i >= 0; i--) {
+    result = (result * 256) + bytes.getUint8(i);
+  }
+  return result;
 }

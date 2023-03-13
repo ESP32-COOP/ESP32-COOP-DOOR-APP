@@ -2,7 +2,7 @@
 	import { goto } from "$app/navigation";
     import { BLE } from '../stores';
     import { onDestroy, onMount } from 'svelte';
-    import {iSWebBLEAvailable, getDeviceInfo} from '$lib/script/BLE'
+    import {iSWebBLEAvailable, getDeviceInfo, isDeviceConnected, connectGATT} from '$lib/script/BLE'
 
 
     
@@ -13,11 +13,14 @@
 
 
 
-    function connect() {
-        // if (iSWebBLEAvailable()){
-        //     getDeviceInfo(); 
-        // }
-        goto("device");
+    async function connect() {
+        await getDeviceInfo(); 
+        await connectGATT()
+        console.log("device status",await isDeviceConnected())
+        if (await isDeviceConnected()){
+            goto("device");
+        }
+        
     }
     </script>
 

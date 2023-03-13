@@ -1,7 +1,14 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
     import SmallBadge from '$lib/components/SmallBadge.svelte';
+	import { isDeviceConnected, readDate } from '$lib/script/BLE';
+	import { onDestroy, onMount } from 'svelte';
 
     let count = 1;
+    let deviceDate = new Date();
+    const options :Intl.DateTimeFormatOptions = { timeZone: 'Europe/Paris', hour12: false, hour: '2-digit', minute: '2-digit' };
+    let timeoutId: NodeJS.Timeout | null  = null;
+
 
     const lightSmallBadgeData = {
         title: 'Light Sensor',
@@ -21,6 +28,35 @@
         link: "cards/clock"
 
     }
+
+
+
+
+onMount(async () => {
+        await updateDate();
+   
+	});
+
+onDestroy(() => {
+  // If a timeout is still active, clear it when the component is destroyed
+  if (timeoutId !== null) {
+    clearTimeout(timeoutId);
+  }
+});
+
+async function updateDate(){
+    if (!isDeviceConnected()){
+        goto("/")
+    }
+    let value  = await readDate();
+    if (value){
+        deviceDate=  new Date(value*1000);
+
+        console.log("reading date device page...", value, new Date(value*1000).toLocaleTimeString('en-US', options));
+        timeoutId = setTimeout(() => updateDate(), 10000);
+    } 
+
+}
 </script>
 
 <div class="p-2 h-screen grid grid-cols-1 " style="grid-template-rows : 1fr 1fr 8fr 3fr;">
@@ -39,7 +75,7 @@
     <div class="h-full mx-4    grid grid-cols-2 gap-4 w-auto">
 
         <SmallBadge { ...lightSmallBadgeData} value={count} />
-        <SmallBadge { ...dateSmallBadgeData} value={count} />
+        <SmallBadge { ...dateSmallBadgeData} value={deviceDate} />
         
     </div>
 

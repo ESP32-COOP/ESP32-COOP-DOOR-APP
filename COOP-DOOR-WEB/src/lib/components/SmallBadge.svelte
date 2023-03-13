@@ -2,7 +2,7 @@
     export let badgeType: string = "light";
     export let title: string = "Title" ;
     export let subTitleType: string = "string";
-    export let value: number = 0;
+    export let value: any = 0;
     export let subTitle: string = "Sub Title";
     export let icon: string = "light";
     export let link: string = "";
@@ -12,7 +12,9 @@
     let iconColor:string = "";
     let iconBg:string = "";
     let btnColor:string = "";
+    const options :Intl.DateTimeFormatOptions = { timeZone: 'Europe/Paris', hour12: false, hour: '2-digit', minute: '2-digit' };
 
+    
 
     if (badgeType == "light"){ 
         primaryColor = "from-slate-300 to-slate-400 opacity-80 ";
@@ -31,6 +33,23 @@
         btnColor = "bg-yellow-300";
         
     }
+
+    let valueToShow = value;
+
+    function getValue(){
+        if (icon=="clock"){
+            return value.toLocaleTimeString('en-US', options)
+        }else{
+            return  value
+        }
+        
+    }
+
+    $:{value ; valueToShow = getValue();}
+
+    $:console.log("hello bage here updating",valueToShow)
+
+    
     
 
 </script>
@@ -53,7 +72,7 @@
             
         {:else if (subTitleType != "string")}
             
-        <p class="{secondaryTextColor}  font-sans">{value}</p>
+        <p class="{secondaryTextColor}  font-sans">{valueToShow}</p>
 
         {/if}
     </div>

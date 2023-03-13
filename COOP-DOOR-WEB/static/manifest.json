@@ -11,7 +11,7 @@
       }
     ],
     "background_color": "#C3CBD5",
-    "theme_color":"FFFFFF",
+    "theme_color":"#FFFFFF",
     "display": "standalone",
     "scope": "/",
     "description": "App to controle your esp32 coop door "
