@@ -26,7 +26,6 @@ export interface BLEType {
 
 
 export function iSWebBLEAvailable() {
-    console.log("hello ")
     if (!navigator.bluetooth) {
         console.log('not available');
         return false;
@@ -63,8 +62,11 @@ export async function connectGATT() {
         localBLE.GATT = await localBLE.device.gatt.connect()
     }
     if (localBLE.GATT != undefined){
+        console.log("getting service...")
         localBLE.service = await localBLE.GATT.getPrimaryService(localBLE.serviceUUID);
+        console.log("getting Date char...")
         localBLE.dateChar = await localBLE.service.getCharacteristic(localBLE.dateCharUUID);
+        console.log("getting Light char...")
         localBLE.lightChar = await localBLE.service.getCharacteristic(localBLE.lightCharUUID);
         updateBLE();
     }
@@ -72,7 +74,11 @@ export async function connectGATT() {
 
 }
 
-export async function isDeviceConnected(){
+export function isDeviceConnected(){
+    return localBLE.device != undefined && localBLE.device.gatt != undefined && localBLE.device.gatt.connected 
+}
+
+export async function getDevice(){
     if (localBLE.device != undefined && localBLE.device.gatt != undefined) return await localBLE.device.gatt.connect()
     return false
 }
@@ -140,7 +146,7 @@ export function getLongFromBytesBuffer(bytes: DataView) {
   }
   return result;
 }
-function getArryFromBuffer(bytes : DataView,len: number){
+export function getArryFromBuffer(bytes : DataView,len: number){
     let result = [];
     for (let i = 0; i < len; i++) {
         result.push( bytes.getUint8(i));

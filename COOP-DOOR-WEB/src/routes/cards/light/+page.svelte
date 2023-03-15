@@ -1,24 +1,36 @@
 <script lang="ts">
-	import { onMount } from "svelte";
-
+	import { getArryFromBuffer, localBLE } from "$lib/script/BLE";
+	import { onDestroy, onMount } from "svelte";
+    const divider = 1000 / 255 // 255 max value of bytes
     let lightValue = 40;
     let minValue = 30;
     let maxValue = 60;
 
 
 
-    function rand(){
+    onMount(async () => {
+        if (localBLE.device && localBLE.GATT && localBLE.lightChar) {
+            localBLE.lightChar.addEventListener('characteristicvaluechanged', handleChangedValue);
+            localBLE.lightChar?.startNotifications();
+        }
+		 
+	});
 
-        lightValue = Math.floor(Math.random() * (100 - 0 + 1) );
+	onDestroy(async () => {
+		if (localBLE.lightChar) {
+            localBLE.lightChar.removeEventListener('characteristicvaluechanged', handleChangedValue);
+            await localBLE.lightChar.stopNotifications();
+        }
+	});
 
-        setTimeout(rand,2000)
+    function handleChangedValue(ev: Event) {
+        const characteristic = ev.target as BluetoothRemoteGATTCharacteristic;
+        const value = characteristic.value as DataView;
+        const data = getArryFromBuffer(value, 3)
+        lightValue = Math.ceil(data[0]*divider);
+        minValue = Math.ceil(data[1]*divider);
+        maxValue = Math.ceil(data[2]*divider);
     }
-
-
-onMount( async ()=>{
-    rand();
-
-})
 
 </script>
 
@@ -29,7 +41,7 @@ onMount( async ()=>{
             <div class="w-full h-full flex items-center justify-center">
                 <div class="rounded-2xl bg-slate-200/20   w-full h-full
                  flex items-center ">
-                    <div style="width: {lightValue}%;" class=" rounded-xl  bg-gradient-to-r from-red-400 to-yellow-200  h-full  transition-all">
+                    <div style="width: {lightValue/maxValue*100}%;" class=" rounded-xl  bg-gradient-to-r from-red-400 to-yellow-200  h-full  transition-all">
                     </div>
                 </div>
             </div>

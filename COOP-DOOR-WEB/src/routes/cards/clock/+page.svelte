@@ -3,7 +3,7 @@
 	import {
 		readDate,
 		writeDate,
-		isDeviceConnected,
+		getDevice,
 		localBLE,
 		getLongFromBytesBuffer
 	} from '$lib/script/BLE';
@@ -24,7 +24,6 @@
         const characteristic = ev.target as BluetoothRemoteGATTCharacteristic;
         const value = characteristic.value as DataView;
         dateDevice = new Date(getLongFromBytesBuffer(value)*1000);
-		console.log('new date.. ' );
 	}
 
 	
@@ -48,9 +47,6 @@
 
     updateDate();
 	async function updateDate() {
-		if (!isDeviceConnected()) {
-			goto('/');
-		}
 		let value = await readDate();
 		if (value) {
 			dateDevice = new Date(value * 1000);

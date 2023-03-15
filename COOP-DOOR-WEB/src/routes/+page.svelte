@@ -2,7 +2,7 @@
 	import { goto } from "$app/navigation";
     import { BLE } from '../stores';
     import { onDestroy, onMount } from 'svelte';
-    import {iSWebBLEAvailable, getDeviceInfo, isDeviceConnected, connectGATT} from '$lib/script/BLE'
+    import {iSWebBLEAvailable, getDeviceInfo, getDevice, connectGATT} from '$lib/script/BLE'
     let connect_text = 'connect';
     
 
@@ -14,12 +14,12 @@
 
     async function connect() {
 
-        connect_text = "selecting"
+        connect_text = "waiting"
         await getDeviceInfo(); 
         connect_text = "connecting"
         await connectGATT()
-        console.log("device status",await isDeviceConnected())
-        if (await isDeviceConnected()){
+        console.log("device status",await getDevice())
+        if (await getDevice()){
             goto("device");
             
         }else{

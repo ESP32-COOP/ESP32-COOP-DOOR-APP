@@ -47,7 +47,6 @@
 
     $:{value ; valueToShow = getValue();}
 
-    $:console.log("hello bage here updating",valueToShow)
 
     
     
