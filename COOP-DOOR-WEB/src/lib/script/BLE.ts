@@ -153,3 +153,11 @@ export function getArryFromBuffer(bytes : DataView,len: number){
     }
     return result;
 }
+
+export async function resetLight(){
+    if(localBLE.lightChar){
+        let buffer = new Uint8Array([0,0,0,1]).buffer;
+        await localBLE.lightChar.writeValue(buffer);
+    }
+    
+}

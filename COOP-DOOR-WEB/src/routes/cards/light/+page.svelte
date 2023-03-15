@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { getArryFromBuffer, localBLE } from "$lib/script/BLE";
+	import { getArryFromBuffer, localBLE, resetLight } from "$lib/script/BLE";
 	import { onDestroy, onMount } from "svelte";
     const divider = 1000 / 255 // 255 max value of bytes
     let lightValue = 40;
@@ -67,7 +67,7 @@
 
             </div>
             <div class="flex items-center justify-center w-full h-full">
-                <button class="uppercase bg-slate-500/50 rounded-xl  w-full h-full text-white text-2xl " >reset</button>
+                <button on:click={resetLight} class="uppercase bg-slate-500/50 rounded-xl  w-full h-full text-white text-2xl " >reset</button>
             </div>
         </div>
 
