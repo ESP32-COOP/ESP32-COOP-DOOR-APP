@@ -20,6 +20,8 @@ export interface BLEType {
     service?: BluetoothRemoteGATTService,
     dateCharUUID: BluetoothCharacteristicUUID,
     dateChar?: BluetoothRemoteGATTCharacteristic,
+    lightCharUUID:BluetoothCharacteristicUUID,
+    lightChar?:BluetoothRemoteGATTCharacteristic,
 }
 
 
@@ -36,7 +38,7 @@ export function iSWebBLEAvailable() {
 export async function getDeviceInfo() {
     let options = {
         //acceptAllDevices: true,
-        optionalServices: [localBLE.serviceUUID, localBLE.dateCharUUID],
+        optionalServices: [localBLE.serviceUUID, localBLE.dateCharUUID,localBLE.lightCharUUID],
         filters: [
             { namePrefix: localBLE.deviceName }
         ]
@@ -63,6 +65,7 @@ export async function connectGATT() {
     if (localBLE.GATT != undefined){
         localBLE.service = await localBLE.GATT.getPrimaryService(localBLE.serviceUUID);
         localBLE.dateChar = await localBLE.service.getCharacteristic(localBLE.dateCharUUID);
+        localBLE.lightChar = await localBLE.service.getCharacteristic(localBLE.lightCharUUID);
         updateBLE();
     }
     
@@ -72,6 +75,16 @@ export async function connectGATT() {
 export async function isDeviceConnected(){
     if (localBLE.device != undefined && localBLE.device.gatt != undefined) return await localBLE.device.gatt.connect()
     return false
+}
+
+export async function readLight(): Promise<number[]>{
+    if (localBLE.lightChar){
+        const divider = 1000 / 255 // 255 max value of bytes
+        const dump = await localBLE.lightChar.readValue()
+        const data = getArryFromBuffer(dump,3);
+	    return [Math.ceil(data[0]*divider),Math.ceil(data[1]*divider),Math.ceil(data[2]*divider)]
+    }
+    return [-1,-1,-1]
 }
 
 
@@ -126,4 +139,11 @@ export function getLongFromBytesBuffer(bytes: DataView) {
     result = (result * 256) + bytes.getUint8(i);
   }
   return result;
+}
+function getArryFromBuffer(bytes : DataView,len: number){
+    let result = [];
+    for (let i = 0; i < len; i++) {
+        result.push( bytes.getUint8(i));
+    }
+    return result;
 }

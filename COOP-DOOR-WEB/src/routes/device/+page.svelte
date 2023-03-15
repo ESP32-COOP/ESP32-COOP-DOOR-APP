@@ -1,20 +1,22 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
     import SmallBadge from '$lib/components/SmallBadge.svelte';
-	import { isDeviceConnected, readDate } from '$lib/script/BLE';
+	import { isDeviceConnected, readDate, readLight } from '$lib/script/BLE';
+	import { error } from '@sveltejs/kit';
 	import { onDestroy, onMount } from 'svelte';
 
-    let count = 1;
+    let deviceValue = 1;
     let deviceDate = new Date();
     const options :Intl.DateTimeFormatOptions = { timeZone: 'Europe/Paris', hour12: false, hour: '2-digit', minute: '2-digit' };
-    let timeoutId: NodeJS.Timeout | null  = null;
+    let timeoutIdDate: NodeJS.Timeout | null  = null;
+    let timeoutIdLight: NodeJS.Timeout | null  = null;
 
 
     const lightSmallBadgeData = {
         title: 'Light Sensor',
         subTitle: 'britness level',
         subTitleType: "value",
-        value: count,
+        value: deviceValue,
         badgeType: "dark",
         link: "cards/light"
 
@@ -34,15 +36,36 @@
 
 onMount(async () => {
         await updateDate();
+        await updateLight();
    
 	});
 
 onDestroy(() => {
   // If a timeout is still active, clear it when the component is destroyed
-  if (timeoutId !== null) {
-    clearTimeout(timeoutId);
+  if (timeoutIdDate !== null) {
+    clearTimeout(timeoutIdDate);
   }
 });
+
+async function updateLight(){
+    if (!isDeviceConnected()){
+        goto("/")
+    }
+    readLight()
+    .then(value => {
+        deviceValue=  value[0];
+        console.log("reading lght from device page ...",deviceValue)
+    }).catch(error => {
+        console.log("Light not Updated..",error)
+    })
+    .finally(() =>{
+        timeoutIdLight = setTimeout(() => updateLight(), 2000);
+    })
+        
+
+    
+
+}
 
 async function updateDate(){
     if (!isDeviceConnected()){
@@ -53,8 +76,9 @@ async function updateDate(){
         deviceDate=  new Date(value*1000);
 
         console.log("reading date device page...", value, new Date(value*1000).toLocaleTimeString('en-US', options));
-        timeoutId = setTimeout(() => updateDate(), 10000);
+        
     } 
+    timeoutIdDate = setTimeout(() => updateDate(), 10000);
 
 }
 </script>
@@ -74,7 +98,7 @@ async function updateDate(){
     </div>
     <div class="h-full mx-4    grid grid-cols-2 gap-4 w-auto">
 
-        <SmallBadge { ...lightSmallBadgeData} value={count} />
+        <SmallBadge { ...lightSmallBadgeData} value={deviceValue} />
         <SmallBadge { ...dateSmallBadgeData} value={deviceDate} />
         
     </div>
