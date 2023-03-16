@@ -22,6 +22,8 @@ export interface BLEType {
     dateChar?: BluetoothRemoteGATTCharacteristic,
     lightCharUUID:BluetoothCharacteristicUUID,
     lightChar?:BluetoothRemoteGATTCharacteristic,
+    doorCharUUID:BluetoothCharacteristicUUID,
+    doorChar?:BluetoothRemoteGATTCharacteristic,
 }
 
 
@@ -37,7 +39,8 @@ export function iSWebBLEAvailable() {
 export async function getDeviceInfo() {
     let options = {
         //acceptAllDevices: true,
-        optionalServices: [localBLE.serviceUUID, localBLE.dateCharUUID,localBLE.lightCharUUID],
+        optionalServices: [localBLE.serviceUUID, localBLE.dateCharUUID,localBLE.lightCharUUID,
+        localBLE.doorCharUUID],
         filters: [
             { namePrefix: localBLE.deviceName }
         ]
@@ -68,6 +71,8 @@ export async function connectGATT() {
         localBLE.dateChar = await localBLE.service.getCharacteristic(localBLE.dateCharUUID);
         console.log("getting Light char...")
         localBLE.lightChar = await localBLE.service.getCharacteristic(localBLE.lightCharUUID);
+        console.log("getting Door char...")
+        localBLE.doorChar = await localBLE.service.getCharacteristic(localBLE.doorCharUUID);
         updateBLE();
     }
     
@@ -126,6 +131,30 @@ export function getBytesFromLong(x: number) : Array<number> {
   return bytes;
 }
 
+export function writeDoor(turn: number, status: 0|1|2|3) {
+    if (localBLE.doorChar){
+        let buffer = new Uint8Array([turn*10, status]).buffer;
+        localBLE.doorChar.writeValue(buffer);
+    }
+}
+
+export async function readDoor(): Promise<number[]> {
+    if (localBLE.doorChar){
+        const dump = await localBLE.doorChar.readValue();
+        let data = getArryFromBuffer(dump,2)
+        data[0] = data[0]/10;
+        return data
+    }
+    return [1,0]
+}
+
+export async function resetLight(){
+    if(localBLE.lightChar){
+        let buffer = new Uint8Array([0,0,0,1]).buffer;
+        await localBLE.lightChar.writeValue(buffer);
+    }
+}
+
 
 
 
@@ -154,10 +183,3 @@ export function getArryFromBuffer(bytes : DataView,len: number){
     return result;
 }
 
-export async function resetLight(){
-    if(localBLE.lightChar){
-        let buffer = new Uint8Array([0,0,0,1]).buffer;
-        await localBLE.lightChar.writeValue(buffer);
-    }
-    
-}

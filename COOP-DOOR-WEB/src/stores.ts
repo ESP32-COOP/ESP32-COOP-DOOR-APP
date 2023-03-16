@@ -13,4 +13,6 @@ export let BLE = writable<BLEType>( {
     dateChar: undefined,
     lightCharUUID:"947aad02-c25d-11ed-afa1-0242ac120002".toLowerCase(),
     lightChar:undefined,
+    doorCharUUID:"c3773399-b755-4e30-9160-bed203fae718".toLowerCase(),
+    doorChar:undefined,
 });

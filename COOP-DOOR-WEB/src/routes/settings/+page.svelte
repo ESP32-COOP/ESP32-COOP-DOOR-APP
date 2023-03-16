@@ -3,18 +3,63 @@
 	import LightInput from '$lib/components/LightInput.svelte';
 	import TimeInput from '$lib/components/TimeInput.svelte';
 	import RadioButton from '$lib/components/RadioButton.svelte';
-	let settings = {
-		close: { light: { active: true, value: 200 }, clock: { active: false, value: '20:30' } },
-		open: { light: { active: true, value: 200 }, clock: { active: false, value: '20:30' } },
-		door: { nbTurn: 5 }
-	};
+	import { onMount } from 'svelte';
+	import { readDoor, writeDoor } from '$lib/script/BLE';
+	interface LightSettings {
+		active: boolean;
+		value: number;}
+
+	interface ClockSettings {
+		active: boolean;
+		value: string;}
+
+	interface DoorSettings {
+		nbTurn: number;
+		mode: 0|1|2|3;}
+
+	interface Settings {
+		close: {
+			light: LightSettings;
+			clock: ClockSettings;
+		};
+		open: {
+			light: LightSettings;
+			clock: ClockSettings;
+		};
+		door: DoorSettings;}
+
+	let settings: Settings = {
+		close: {
+			light: { active: true, value: 200 },
+			clock: { active: false, value: '20:30' }
+		},
+		open: {
+			light: { active: true, value: 200 },
+			clock: { active: false, value: '20:30' }
+		},
+		door: { nbTurn: 5, mode: 0 }};
 	let page: string | null = 'close';
 	page = sessionStorage.getItem('page');
 	page = page == null ? 'close' : page;
 
 	$: sessionStorage.setItem('page', page == null ? 'close' : page);
 
-	$: console.log(settings);
+	onMount(async () => {
+		readDoor()
+		.then(data =>{
+			settings.door.nbTurn = data[0];
+			settings.door.mode = data[1] as 0|1|2|3;
+		})
+	});
+
+	function setDoorValue(event: MouseEvent | null, nbTurn:number =settings.door.nbTurn, mode:0|1|2|3=settings.door.mode) {
+		console.log('door values.. ', nbTurn, mode);
+		writeDoor(nbTurn, mode);
+	}
+
+	function testDoor(){
+		setDoorValue(null, settings.door.nbTurn,3)
+	}
 </script>
 
 <div class="grid h-screen grid-cols-1 p-2 " style="grid-template-rows : 1fr 1fr 11fr ;">
@@ -142,7 +187,6 @@
 								type="range"
 								class="z-10 h-full   w-full opacity-0 "
 								style=" -webkit-appearance: slider-vertical;"
-					
 							/>
 							<!--mozila sepcial orient="vertical" -->
 							<div class="absolute flex h-full w-full flex-col justify-end p-2">
@@ -158,10 +202,12 @@
 						</div>
 					</div>
 					<div class="grid h-full w-full grid-cols-1 gap-5" style="grid-template-rows: 4fr 1fr">
-						<RadioButton />
+						<RadioButton bind:mode={settings.door.mode} />
 						<div class="grid h-full w-full grid-cols-2 gap-5 ">
-							<button class="rounded-xl bg-slate-50 font-bold uppercase">test</button>
-							<button class="rounded-xl bg-slate-50 font-bold uppercase">apply</button>
+							<button on:click={testDoor} class="rounded-xl bg-slate-50 font-bold uppercase">test</button>
+							<button on:click={setDoorValue} class="rounded-xl bg-slate-50 font-bold uppercase"
+								>apply</button
+							>
 						</div>
 					</div>
 				</div>

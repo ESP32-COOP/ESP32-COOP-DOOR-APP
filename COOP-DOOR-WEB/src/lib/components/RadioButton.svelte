@@ -1,5 +1,5 @@
 <script lang="ts">
-	export let mode = 0;
+	export let mode: 0|1|2|3 = 0;
 </script>
 
 <div class="grid h-full w-full grid-cols-1 gap-5">
