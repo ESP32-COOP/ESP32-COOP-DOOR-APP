@@ -18,7 +18,6 @@
         await getDeviceInfo(); 
         connect_text = "connecting"
         await connectGATT()
-        console.log("device status",await getDevice())
         if (await getDevice()){
             goto("device");
             

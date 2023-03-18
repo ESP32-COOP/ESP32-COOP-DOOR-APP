@@ -24,6 +24,10 @@ export interface BLEType {
     lightChar?:BluetoothRemoteGATTCharacteristic,
     doorCharUUID:BluetoothCharacteristicUUID,
     doorChar?:BluetoothRemoteGATTCharacteristic,
+    doorCloseCharUUID:BluetoothCharacteristicUUID,
+    doorCloseChar?:BluetoothRemoteGATTCharacteristic,
+    doorOpenCharUUID :BluetoothCharacteristicUUID,
+    doorOpenChar?:BluetoothRemoteGATTCharacteristic,
 }
 
 
@@ -73,6 +77,10 @@ export async function connectGATT() {
         localBLE.lightChar = await localBLE.service.getCharacteristic(localBLE.lightCharUUID);
         console.log("getting Door char...")
         localBLE.doorChar = await localBLE.service.getCharacteristic(localBLE.doorCharUUID);
+        console.log("getting Door Close char...")
+        localBLE.doorCloseChar = await localBLE.service.getCharacteristic(localBLE.doorCloseCharUUID);
+        console.log("getting Door Open char...")
+        localBLE.doorOpenChar = await localBLE.service.getCharacteristic(localBLE.doorOpenCharUUID);
         updateBLE();
     }
     
@@ -155,8 +163,33 @@ export async function resetLight(){
     }
 }
 
+export function writeCloseDoor(mode:number, light:number, hour:number, minute:number){
+    if (localBLE.doorCloseChar){
+        let buffer = new Uint8Array([mode, light, hour, minute]).buffer;
+        localBLE.doorCloseChar.writeValue(buffer);
+    }
+}
 
+export function writeOpenDoor(mode:number, light:number, hour:number, minute:number){
+    if (localBLE.doorOpenChar){
+        let buffer = new Uint8Array([mode, light, hour, minute]).buffer;
+        localBLE.doorOpenChar.writeValue(buffer);
+    }
+}
 
+export async function readCloseDoor(): Promise<number[]>{
+    if (localBLE.doorCloseChar){
+        return getArryFromBuffer(await localBLE.doorCloseChar.readValue(),4)
+    }
+    return [0,-1,0,0]
+}
+
+export async function readOpenDoor(): Promise<number[]>{
+    if (localBLE.doorOpenChar){
+        return getArryFromBuffer(await localBLE.doorOpenChar.readValue(),4)
+    }
+    return [0,-1,0,0]
+}
 
 
 export function getLongFromBytes(bytes: number[]) {

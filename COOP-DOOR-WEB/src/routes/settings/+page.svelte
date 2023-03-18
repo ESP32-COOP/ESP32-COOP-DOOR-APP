@@ -4,14 +4,14 @@
 	import TimeInput from '$lib/components/TimeInput.svelte';
 	import RadioButton from '$lib/components/RadioButton.svelte';
 	import { onMount } from 'svelte';
-	import { readDoor, writeDoor } from '$lib/script/BLE';
+	import { readCloseDoor, readDoor, readOpenDoor, writeCloseDoor, writeDoor, writeOpenDoor } from '$lib/script/BLE';
 	interface LightSettings {
 		active: boolean;
 		value: number;}
 
 	interface ClockSettings {
 		active: boolean;
-		value: string;}
+		value: any;}
 
 	interface DoorSettings {
 		nbTurn: number;
@@ -21,21 +21,25 @@
 		close: {
 			light: LightSettings;
 			clock: ClockSettings;
+			condition: 'and'|'or';
 		};
 		open: {
 			light: LightSettings;
 			clock: ClockSettings;
+			condition: 'and'|'or';
 		};
 		door: DoorSettings;}
 
 	let settings: Settings = {
 		close: {
-			light: { active: true, value: 200 },
-			clock: { active: false, value: '20:30' }
+			light: { active: false, value: 200 },
+			clock: { active: false, value: '20:30' },
+			condition: 'or',
 		},
 		open: {
-			light: { active: true, value: 200 },
-			clock: { active: false, value: '20:30' }
+			light: { active: false, value: 200 },
+			clock: { active: false, value: '20:30' },
+			condition: 'or',
 		},
 		door: { nbTurn: 5, mode: 0 }};
 	let page: string | null = 'close';
@@ -50,6 +54,29 @@
 			settings.door.nbTurn = data[0];
 			settings.door.mode = data[1] as 0|1|2|3;
 		})
+
+		readCloseDoor()
+		.then(data =>{
+			
+			settings.close.light.value = data[1];
+			settings.close.clock.value = (data[2]<10?"0"+data[2]:data[2])+":"+data[3];
+			settings.close.light.active =  data[0] == 0 || data[0] == 2?false:true;
+			settings.close.clock.active =  data[0] == 0 || data[0] == 1?false:true;
+			settings.close.condition =  data[0] == 4 ?'and':'or';
+
+		})
+
+		readOpenDoor()
+		.then(data =>{
+			
+			settings.open.light.value = data[1];
+			settings.open.clock.value = (data[2]<10?"0"+data[2]:data[2])+":"+data[3];
+			settings.open.light.active =  data[0] == 0 || data[0] == 2?false:true;
+			settings.open.clock.active =  data[0] == 0 || data[0] == 1?false:true;
+			settings.open.condition =  data[0] == 4 ?'and':'or';
+
+		})
+
 	});
 
 	function setDoorValue(event: MouseEvent | null, nbTurn:number =settings.door.nbTurn, mode:0|1|2|3=settings.door.mode) {
@@ -59,6 +86,32 @@
 
 	function testDoor(){
 		setDoorValue(null, settings.door.nbTurn,3)
+	}
+
+	function handleDoorClose(){
+		const [hourString, minuteString] = settings.close.clock.value.split(':');
+		const hour = parseInt(hourString, 10);
+		const minute = parseInt(minuteString, 10);
+		let mode = 0;
+		mode = settings.close.light.active? mode+1:mode;
+		mode = settings.close.clock.active? mode+2:mode;
+		mode = settings.close.condition=='or' && mode!=0?mode:mode+1 ;
+		console.log("mode",mode,"light",settings.close.light.value, "hour", hour,"minute",minute)
+		writeCloseDoor(mode,settings.close.light.value,hour,minute  )
+
+	}
+
+	function handleDoorOpen(){
+		const [hourString, minuteString] = settings.open.clock.value.split(':');
+		const hour = parseInt(hourString, 10);
+		const minute = parseInt(minuteString, 10);
+		let mode = 0;
+		mode = settings.open.light.active? mode+1:mode;
+		mode = settings.open.clock.active? mode+2:mode;
+		mode = settings.open.condition=='or' && mode!=0?mode:mode+1 ;
+		console.log("mode",mode,"light",settings.open.light.value, "hour", hour,"minute",minute)
+		writeOpenDoor(mode,settings.open.light.value,hour,minute  )
+
 	}
 </script>
 
@@ -125,7 +178,7 @@
 					/>
 
 					<div class=" flex items-center">
-						<select class="ml-5 rounded-md bg-slate-500 px-2 uppercase text-white">
+						<select bind:value={settings.close.condition} class="ml-5 rounded-md bg-slate-500 px-2 uppercase text-white">
 							<option>and</option>
 							<option>or</option>
 						</select>
@@ -135,7 +188,7 @@
 						bind:value={settings.close.clock.value}
 					/>
 
-					<button class="rounded-xl bg-slate-50 text-2xl font-bold uppercase">apply</button>
+					<button on:click={handleDoorClose} class="rounded-xl bg-slate-50 text-2xl font-bold uppercase">apply</button>
 				</div>
 			{:else if page == 'open'}
 				<div
@@ -160,7 +213,7 @@
 					/>
 
 					<div class=" flex items-center">
-						<select class="ml-5 rounded-md bg-slate-500 px-2 uppercase text-white">
+						<select bind:value={settings.open.condition} class="ml-5 rounded-md bg-slate-500 px-2 uppercase text-white">
 							<option>and</option>
 							<option>or</option>
 						</select>
@@ -170,7 +223,7 @@
 						bind:value={settings.open.clock.value}
 					/>
 
-					<button class="rounded-xl bg-slate-50 text-2xl font-bold uppercase">apply</button>
+					<button on:click={handleDoorOpen} class="rounded-xl bg-slate-50 text-2xl font-bold uppercase">apply</button>
 				</div>
 			{:else if page == 'door'}
 				<div

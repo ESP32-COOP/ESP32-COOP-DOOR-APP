@@ -17,7 +17,7 @@
 	let timeoutIdLight: NodeJS.Timeout | null = null;
 	let deviceConnected: Boolean | BluetoothRemoteGATTServer = true
 
-	$: timeoutIdDate, timeoutIdLight,  deviceConnected = isDeviceConnected()
+	$: timeoutIdDate, timeoutIdLight,null,  deviceConnected = isDeviceConnected()
 
 	const lightSmallBadgeData = {
 		title: 'Light Sensor',
@@ -44,9 +44,11 @@
 	onDestroy(() => {
 		// If a timeout is still active, clear it when the component is destroyed
 		if (timeoutIdDate !== null) {
+			console.log("clear date timeout");
 			clearTimeout(timeoutIdDate);
 		}
 		if (timeoutIdLight !== null) {
+			console.log("clear light timeout");
 			clearTimeout(timeoutIdLight);
 		}
 	});
