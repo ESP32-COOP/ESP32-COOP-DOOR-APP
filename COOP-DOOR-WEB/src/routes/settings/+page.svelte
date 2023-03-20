@@ -57,7 +57,6 @@
 
 		readCloseDoor()
 		.then(data =>{
-			
 			settings.close.light.value = data[1];
 			settings.close.clock.value = (data[2]<10?"0"+data[2]:data[2])+":"+data[3];
 			settings.close.light.active =  data[0] == 0 || data[0] == 2?false:true;
@@ -68,7 +67,6 @@
 
 		readOpenDoor()
 		.then(data =>{
-			
 			settings.open.light.value = data[1];
 			settings.open.clock.value = (data[2]<10?"0"+data[2]:data[2])+":"+data[3];
 			settings.open.light.active =  data[0] == 0 || data[0] == 2?false:true;

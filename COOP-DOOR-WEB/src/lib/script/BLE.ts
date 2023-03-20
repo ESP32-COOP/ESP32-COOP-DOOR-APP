@@ -44,7 +44,7 @@ export async function getDeviceInfo() {
     let options = {
         //acceptAllDevices: true,
         optionalServices: [localBLE.serviceUUID, localBLE.dateCharUUID,localBLE.lightCharUUID,
-        localBLE.doorCharUUID],
+        localBLE.doorCharUUID, localBLE.doorCloseCharUUID, localBLE.doorOpenCharUUID],
         filters: [
             { namePrefix: localBLE.deviceName }
         ]
@@ -182,6 +182,8 @@ export async function readCloseDoor(): Promise<number[]>{
         return getArryFromBuffer(await localBLE.doorCloseChar.readValue(),4)
     }
     return [0,-1,0,0]
+   
+    
 }
 
 export async function readOpenDoor(): Promise<number[]>{
