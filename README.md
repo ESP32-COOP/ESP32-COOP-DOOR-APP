@@ -14,7 +14,7 @@ Coop Door made with a Esp32
 The goal is to make a simple mobile interface to setup your coop door over Bluetooth low energy
 
 # :jigsaw: Functionality
-Here are the settings that the app allow you to edit on the coop door:
+Here are the settings that the app via bluetooth allow you to edit on the coop door:
 - opening condition:
     - ambient brightness above *200*
     - AND / OR
