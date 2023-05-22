@@ -3,11 +3,15 @@
     import { BLE } from '../stores';
     import { onDestroy, onMount } from 'svelte';
     import {iSWebBLEAvailable, getDeviceInfo, getDevice, connectGATT} from '$lib/script/BLE'
+	import SnackBar from "$lib/components/SnackBar.svelte";
     let connect_text = 'connect';
+    let snakManager: SnackBar;
     
 
-    onMount(async () => {
-      
+    onMount( () => {
+        console.log(snakManager)
+        
+
 	});
 
 
@@ -17,7 +21,14 @@
         connect_text = "waiting"
         await getDeviceInfo(); 
         connect_text = "connecting"
-        await connectGATT()
+        try {
+             await connectGATT()
+        } catch (error) {
+            console.error(error)
+            snakManager.displayToast("error",error)
+            connect_text = "connect"
+        }
+       
         if (await getDevice()){
             goto("device");
             
@@ -60,4 +71,5 @@
 
 
 </div>
+<SnackBar bind:this={snakManager}></SnackBar>
 

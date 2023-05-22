@@ -142,7 +142,11 @@ export function getBytesFromLong(x: number) : Array<number> {
 export function writeDoor(turn: number, status: 0|1|2|3) {
     if (localBLE.doorChar){
         let buffer = new Uint8Array([turn*10, status]).buffer;
-        localBLE.doorChar.writeValue(buffer);
+
+        return localBLE.doorChar.writeValue(buffer)
+        .catch(error => {
+            throw error;
+        })
     }
 }
 

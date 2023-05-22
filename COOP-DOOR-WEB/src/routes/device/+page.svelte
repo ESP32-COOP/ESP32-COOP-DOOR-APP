@@ -37,8 +37,8 @@
 	};
 
 	onMount(async () => {
-		await updateDate();
-		await updateLight();
+		//await updateDate();
+		//await updateLight();
 	});
 
 	onDestroy(() => {

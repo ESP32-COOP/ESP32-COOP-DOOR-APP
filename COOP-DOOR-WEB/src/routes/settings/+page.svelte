@@ -5,6 +5,11 @@
 	import RadioButton from '$lib/components/RadioButton.svelte';
 	import { onMount } from 'svelte';
 	import { readCloseDoor, readDoor, readOpenDoor, writeCloseDoor, writeDoor, writeOpenDoor } from '$lib/script/BLE';
+	import SnackBar from '$lib/components/SnackBar.svelte';
+	import { error } from '@sveltejs/kit';
+
+	let snakManager: SnackBar;
+
 	interface LightSettings {
 		active: boolean;
 		value: number;}
@@ -79,7 +84,15 @@
 
 	function setDoorValue(event: MouseEvent | null, nbTurn:number =settings.door.nbTurn, mode:0|1|2|3=settings.door.mode) {
 		console.log('door values.. ', nbTurn, mode);
-		writeDoor(nbTurn, mode);
+		
+			writeDoor(nbTurn, mode)?.catch(error =>{
+				console.error(error)
+			snakManager.displayToast("error",error)
+
+			})
+		
+		
+		
 	}
 
 	function testDoor(){
@@ -270,3 +283,4 @@
 		</div>
 	</div>
 </div>
+<SnackBar bind:this={snakManager}></SnackBar>
