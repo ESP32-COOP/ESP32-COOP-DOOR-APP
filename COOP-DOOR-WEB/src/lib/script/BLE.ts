@@ -63,13 +63,14 @@ export async function getDeviceInfo() {
 }
 
 
-export async function connectGATT() {
+export async function connectGATT(callback: Function = (msg: string) => {}) {
     if (localBLE.device != undefined && localBLE.device.gatt != undefined ){
         console.log("device status",localBLE.device.gatt.connected)
         localBLE.GATT = await localBLE.device.gatt.connect()
     }
     if (localBLE.GATT != undefined){
         console.log("getting service...")
+        callback("Connection successful, Getting service...")
         localBLE.service = await localBLE.GATT.getPrimaryService(localBLE.serviceUUID);
         console.log("getting Date char...")
         localBLE.dateChar = await localBLE.service.getCharacteristic(localBLE.dateCharUUID);

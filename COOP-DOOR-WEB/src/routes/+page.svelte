@@ -11,10 +11,12 @@
 		await getDeviceInfo();
 		connect_text = 'connecting';
 		try {
-			await connectGATT();
+			await connectGATT((msg:string )=> {
+				showToast({type:'success', message: msg , duration:2000});
+			});
 		} catch (error) {
 			console.error(error);
-			showToast({type:'error',message: error});
+			showToast({type:'error', message: error as string});
 			connect_text = 'connect';
 		}
 
@@ -27,15 +29,15 @@
 </script>
 
 <div
-	class="grid h-screen grid-cols-1 bg-slate-600 bg-opacity-20 p-2   "
+	class="grid grid-cols-1 p-2 h-screen bg-opacity-20 bg-slate-600"
 	style="grid-template-rows : 1fr 1fr 8fr 3fr;"
 >
-	<div class="flex h-full w-full flex-row items-center " />
+	<div class="flex flex-row items-center w-full h-full" />
 
-	<h1 class=" ml-8 text-3xl uppercase">connect <span class="font-bold">device</span></h1>
+	<h1 class="ml-8 text-3xl uppercase">connect <span class="font-bold">device</span></h1>
 	<div class=" bg-[url('/connect.svg')] bg-center bg-no-repeat" />
-	<div class="flex h-full w-full items-center justify-center ">
-		<!-- <button disabled type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 inline-flex items-center">
+	<div class="flex justify-center items-center w-full h-full">
+		<!-- <button disabled type="button" class="inline-flex items-center px-5 py-2.5 mr-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
     
     Loading...
 </button> -->
@@ -51,7 +53,7 @@
 				<svg
 					aria-hidden="true"
 					role="status"
-					class="mr-2 inline h-8 w-8 animate-spin text-white"
+					class="inline mr-2 w-8 h-8 text-white animate-spin"
 					viewBox="0 0 100 101"
 					fill="none"
 					xmlns="http://www.w3.org/2000/svg"
