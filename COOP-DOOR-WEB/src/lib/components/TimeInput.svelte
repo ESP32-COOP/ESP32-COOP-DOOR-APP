@@ -36,19 +36,19 @@
 </script>
 
 <div
-	class="grid grid-cols-3 items-center gap-5 rounded-xl bg-slate-50 p-5 {active
+	class="grid grid-cols-3 items-center gap-5 rounded-xl bg-slate-50 p-3 {active
 		? ''
 		: 'opacity-50'}"
 	style="grid-template-columns : 1fr 1fr 1fr ;"
 >
-	<div class="flex h-full w-full items-center justify-center">
-		<img class=" h-full w-auto " src="clock.svg" alt="clock" />
+	<div class="flex justify-center items-center w-full h-full">
+		<img class="w-auto h-full" src="clock.svg" alt="clock" />
 	</div>
-	<div class="flex h-full w-full items-center justify-center">
+	<div class="flex justify-center items-center w-full h-full">
 		<p class="font-bold">at</p>
 	</div>
 	<input
-		class="w-full rounded-xl bg-slate-500 p-2 text-xl font-bold text-white"
+		class="p-2 w-full text-xl font-bold text-white rounded-xl bg-slate-500"
 		type="time"
 		bind:value={selectedTime}
 		disabled={!active}

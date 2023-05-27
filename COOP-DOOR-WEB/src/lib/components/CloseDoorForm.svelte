@@ -24,15 +24,15 @@ $: console.log("localOpenSettings", localCloseSettings)
 </script>
 
 <div
-	class="grid h-full w-full grid-cols-1 gap-5"
+	class="grid overflow-hidden grid-cols-1 gap-2 w-full h-full max-h-full"
 	style="grid-template-rows : 2.5fr 5fr .5fr 5fr 2fr ;"
 >
 	<div
-		class="grid grid-cols-2 items-center gap-2 rounded-xl bg-slate-50 p-1"
+		class="grid grid-cols-2 gap-2 items-center p-1 rounded-xl bg-slate-50"
 		style="grid-template-columns : 4rem 1fr ;"
 	>
 		<h3 class="ml-2">option</h3>
-		<div class="flex h-full w-full flex-row gap-2">
+		<div class="flex flex-row gap-2 w-full h-full">
 			<OptionBadge icon="light" hint="light" bind:active={localCloseSettings.lightOption} />
 			<OptionBadge icon="clock" hint="time" bind:active={localCloseSettings.timeOption} />
 		</div>
@@ -44,10 +44,10 @@ $: console.log("localOpenSettings", localCloseSettings)
 		direction="lower"
 	/>
 
-	<div class=" flex items-center">
+	<div class="flex items-center">
 		<select
 			bind:value={localCloseSettings.condition}
-			class="ml-5 rounded-md bg-slate-500 px-2 uppercase text-white"
+			class="px-2 ml-5 text-white uppercase rounded-md bg-slate-500"
 		>
 			<option value="AND">and</option>
 			<option value="OR">or</option>
@@ -55,7 +55,7 @@ $: console.log("localOpenSettings", localCloseSettings)
 	</div>
 	<TimeInput bind:active={localCloseSettings.timeOption} bind:value={localCloseSettings.timeThreshold} />
 
-	<button on:click={handleDoorClose} class="rounded-xl bg-slate-50 text-2xl font-bold uppercase"
+	<button on:click={handleDoorClose} class="text-2xl font-bold uppercase rounded-xl bg-slate-50"
 		>apply</button
 	>
 </div>
