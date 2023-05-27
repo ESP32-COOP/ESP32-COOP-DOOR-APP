@@ -3,7 +3,7 @@
 	import { onMount } from 'svelte';
 	import RadioButton from './RadioButton.svelte';
 	import type { doorSettingsDTO } from '../../types/doorSettingsDTO';
-	import { doorSettings } from '../../stores';
+	import { doorSettings, showToast } from '../../stores';
 
     let localDoorSettings: doorSettingsDTO;
     const unsubscribe = doorSettings.subscribe(value => localDoorSettings= value)
@@ -28,7 +28,7 @@
 
 		writeDoor(nbTurn, mode)?.catch((error) => {
 			console.error(error);
-			//snakManager.displayToast('error', error);
+			showToast({type:'error',message: error});
 		});
 	}
 

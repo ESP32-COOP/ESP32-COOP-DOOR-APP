@@ -9,7 +9,8 @@
 	} from '$lib/script/BLE';
 	import { betterTimeDisplay } from '$lib/script/Time';
 	import { onDestroy, onMount } from 'svelte';
-	import { date } from '../../../stores';
+	import { date, showToast } from '../../../stores';
+	import SnackBar from '$lib/components/SnackBar.svelte';
 
 	let localDate: Date = new Date();
 
@@ -65,6 +66,7 @@
 			})
 			.catch((error) => {
 				console.log('failed', error);
+				showToast({type:'error',message: error});
 			})
 			.finally(() => {
 				initDateListener()
@@ -122,3 +124,4 @@
 		</button>
 	</div>
 </div>
+<SnackBar  />

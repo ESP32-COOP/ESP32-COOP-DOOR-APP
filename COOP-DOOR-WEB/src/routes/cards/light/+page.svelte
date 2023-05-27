@@ -3,6 +3,7 @@
 	import { onDestroy, onMount } from "svelte";
 	import type { LightDTO } from "../../../types/lightDTO";
 	import { light } from "../../../stores";
+	import SnackBar from "$lib/components/SnackBar.svelte";
     const divider = 1000 / 255 // 255 max value of bytes
     let localLight: LightDTO;
 
@@ -76,3 +77,5 @@
 
     </div>
 </div>
+
+<SnackBar />
