@@ -1,10 +1,12 @@
 <script lang="ts">
 	import { getArryFromBuffer, localBLE, resetLight } from "$lib/script/BLE";
 	import { onDestroy, onMount } from "svelte";
+	import type { LightDTO } from "../../../types/lightDTO";
+	import { light } from "../../../stores";
     const divider = 1000 / 255 // 255 max value of bytes
-    let lightValue = 40;
-    let minValue = 30;
-    let maxValue = 60;
+    let localLight: LightDTO;
+
+    const unsubscribe = light.subscribe((value) => localLight = value)
 
 
 
@@ -27,9 +29,8 @@
         const characteristic = ev.target as BluetoothRemoteGATTCharacteristic;
         const value = characteristic.value as DataView;
         const data = getArryFromBuffer(value, 3)
-        lightValue = Math.ceil(data[0]*divider);
-        minValue = Math.ceil(data[1]*divider);
-        maxValue = Math.ceil(data[2]*divider);
+        console.debug("light",  {value:data[0]*divider,min: data[1]*divider,max: data[2]*divider})
+        light.set({value:Math.round(data[0]*divider),min: Math.round(data[1]*divider),max: Math.round(data[2]*divider)})
     }
 
 </script>
@@ -41,24 +42,24 @@
             <div class="w-full h-full flex items-center justify-center">
                 <div class="rounded-2xl bg-slate-200/20   w-full h-full
                  flex items-center ">
-                    <div style="width: {lightValue/maxValue*100}%;" class=" rounded-xl  bg-gradient-to-r from-red-400 to-yellow-200  h-full  transition-all">
+                    <div style="width: {localLight.value/localLight.max*100}%;" class=" rounded-xl  bg-gradient-to-r from-red-400 to-yellow-200  h-full  transition-all">
                     </div>
                 </div>
             </div>
             <div class="grid w-full h-full columns-1 gap-5">
                 <div class="w-full h-full flex items-center justify-center">
                     <div class="rounded-2xl bg-slate-200/20  w-full h-full grid grid-cols-2 items-center justify-center gap-3">
-                        <p class="text-white/60 text-xl text-right">value : </p><h2 class="text-white text-5xl">{lightValue}</h2>
+                        <p class="text-white/60 text-xl text-right">value : </p><h2 class="text-white text-5xl">{localLight.value}</h2>
                     </div>
                 </div>
                 <div class="w-auto h-full columns-2  gap-5">
                     <div class="rounded-2xl bg-slate-200/20  w-full h-full flex flex-col justify-center items-center">
-                        <h3 class="text-white text-4xl">{minValue}</h3>
+                        <h3 class="text-white text-4xl">{localLight.min}</h3>
                         <p class="text-white/60">min</p>
                         
                     </div>
                     <div class="rounded-2xl bg-slate-200/20  w-full h-full flex flex-col justify-center items-center">
-                        <h3 class="text-white text-4xl">{maxValue}</h3>
+                        <h3 class="text-white text-4xl">{localLight.max}</h3>
                         <p class="text-white/60">max</p>
                     </div>
 

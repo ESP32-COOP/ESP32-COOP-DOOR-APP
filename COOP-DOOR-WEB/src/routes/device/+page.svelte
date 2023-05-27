@@ -4,8 +4,9 @@
 	import { isDeviceConnected, readDate, readLight } from '$lib/script/BLE';
 	import { onDestroy, onMount } from 'svelte';
 	import Popup from '$lib/components/Popup.svelte';
+	import type { LightDTO } from '../../types/lightDTO';
+	import { light } from '../../stores';
 
-	let deviceValue = 1;
 	let deviceDate = new Date();
 	const options: Intl.DateTimeFormatOptions = {
 		timeZone: 'Europe/Paris',
@@ -15,7 +16,11 @@
 	};
 	let timeoutIdDate: NodeJS.Timeout | null = null;
 	let timeoutIdLight: NodeJS.Timeout | null = null;
-	let deviceConnected: Boolean | BluetoothRemoteGATTServer = true
+	let deviceConnected: Boolean | BluetoothRemoteGATTServer = true;
+
+	let lightValue: number = 0;
+
+    const unsubscribe = light.subscribe((value) => lightValue = value.value)
 
 	$: timeoutIdDate, timeoutIdLight,null,  deviceConnected = isDeviceConnected()
 
@@ -23,7 +28,7 @@
 		title: 'Light Sensor',
 		subTitle: 'britness level',
 		subTitleType: 'value',
-		value: deviceValue,
+		value: lightValue,
 		badgeType: 'dark',
 		link: 'cards/light'
 	};
@@ -37,8 +42,8 @@
 	};
 
 	onMount(async () => {
-		//await updateDate();
-		//await updateLight();
+		await updateDate();
+		await updateLight();
 	});
 
 	onDestroy(() => {
@@ -56,14 +61,15 @@
 	async function updateLight() {
 		readLight()
 			.then((value) => {
-				deviceValue = value[0];
-				console.log('reading light D...', deviceValue);
+				light.set({value: value[0],min: value[1],max: value[2]})
+				console.log('reading light D...', value[0]);
 			})
 			.catch((error) => {
 				console.log('Light not Updated..', error);
 			})
 			.finally(() => {
-				timeoutIdLight = setTimeout(() => updateLight(), 2000);
+				if (timeoutIdLight) clearTimeout(timeoutIdLight);
+				timeoutIdLight = setTimeout(() => updateLight(), 5000);
 			});
 	}
 
@@ -93,7 +99,7 @@
 	<h1 class="ml-8 text-3xl uppercase">coop <span class="font-bold">door</span></h1>
 	<div class="bg-[url('/coop.svg')] bg-center bg-no-repeat" />
 	<div class="mx-4 grid    h-full w-auto grid-cols-2 gap-4">
-		<SmallBadge {...lightSmallBadgeData} value={deviceValue} />
+		<SmallBadge {...lightSmallBadgeData} value={lightValue} />
 		<SmallBadge {...dateSmallBadgeData} value={deviceDate} />
 	</div>
 </div>

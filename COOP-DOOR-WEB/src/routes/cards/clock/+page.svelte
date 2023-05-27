@@ -7,10 +7,16 @@
 		localBLE,
 		getLongFromBytesBuffer
 	} from '$lib/script/BLE';
+	import { betterTimeDisplay } from '$lib/script/Time';
 	import { onDestroy, onMount } from 'svelte';
+	import { date } from '../../../stores';
+
+	let localDate: Date = new Date();
+
+	const unsubscribe = date.subscribe((value) => localDate = value)
 
 	let datePhone = new Date();
-	let dateDevice = new Date(datePhone.getTime() + 2 * 60000);
+
 	const options: Intl.DateTimeFormatOptions = {
 		timeZone: 'Europe/Paris',
 		hour12: false,
@@ -23,48 +29,46 @@
 	function handleChangedValue(ev: Event) {
         const characteristic = ev.target as BluetoothRemoteGATTCharacteristic;
         const value = characteristic.value as DataView;
-        dateDevice = new Date(getLongFromBytesBuffer(value)*1000);
+        date.set(new Date(getLongFromBytesBuffer(value)*1000));
+		console.log("new value",getLongFromBytesBuffer(value))
 	}
 
 	
 
 	onMount(async () => {
-        if (localBLE.device && localBLE.GATT && localBLE.dateChar) {
+        initDateListener()
+	});
+
+	function initDateListener(){
+		if (localBLE.device && localBLE.GATT && localBLE.dateChar) {
             localBLE.dateChar.addEventListener('characteristicvaluechanged', handleChangedValue);
             localBLE.dateChar?.startNotifications();
         }
-		 
-	});
+	}
 
 	onDestroy(async () => {
 		if (localBLE.dateChar) {
             localBLE.dateChar.removeEventListener('characteristicvaluechanged', handleChangedValue);
-            await localBLE.dateChar.stopNotifications();
+            await localBLE.dateChar?.stopNotifications();
         }
 	});
 
-    $:dateDevice, datePhone = new Date();
+    $:localDate, datePhone = new Date();
 
-    updateDate();
-	async function updateDate() {
-		let value = await readDate();
-		if (value) {
-			dateDevice = new Date(value * 1000);
-		}
-	}
+
 
 	function sync() {
 		console.log('syncing...');
 		writeDate()
 			.then((res) => {
-				console.log('updated!', res);
+				console.log('updated!', res,localBLE.dateChar);
 			})
 			.catch((error) => {
 				console.log('failed', error);
 			})
 			.finally(() => {
-				setTimeout(() => updateDate(), 1000);
-			});
+				initDateListener()
+			})
 	}
 </script>
 
@@ -76,10 +80,10 @@
 	>
 		<div class=" grid h-full w-full grid-cols-2 gap-5 rounded-xl">
 			<div class="flex h-full w-full flex-col items-center justify-around rounded-xl bg-slate-50">
-				<h2 class="text-5xl">{dateDevice.toLocaleTimeString('en-US', options)}</h2>
+				<h2 class="text-5xl">{localDate.toLocaleTimeString('en-US', options)}</h2>
 
 				<h3 class="text-2xl">
-					{dateDevice.getDay()}/{dateDevice.getMonth()}/{dateDevice.getFullYear()}
+					{localDate.getDay()}/{localDate.getMonth()}/{localDate.getFullYear()}
 				</h3>
 				<p class="text-black/80">device</p>
 			</div>
@@ -98,9 +102,19 @@
 			style="grid-template-columns : 2fr 8fr ;"
 		>
 			<p class="ml-2  w-fit">delta :</p>
-			<h4 class="text-3xl text-red-500">
-				{((dateDevice.getTime() - datePhone.getTime()) / 60000).toFixed(3)} min
+			{#if Math.abs(Math.floor((localDate.getTime() - datePhone.getTime()) / 1000)) < 60}
+			<h4 class="text-3xl text-green-500 ">
+				{ betterTimeDisplay(localDate.getTime() - datePhone.getTime())}
 			</h4>
+				
+			{:else}
+			<h4 class="text-3xl  text-red-500">
+				{ betterTimeDisplay(localDate.getTime() - datePhone.getTime())} 
+			</h4>
+
+			{/if}
+		
+				
 		</div>
 
 		<button on:click={sync} class="rounded-xl bg-slate-50 text-xl font-semibold uppercase">

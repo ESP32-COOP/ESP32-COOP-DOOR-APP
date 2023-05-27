@@ -56,12 +56,17 @@
 	onMount(async () => {
 		readDoor()
 		.then(data =>{
+			console.debug('door data',data)
 			settings.door.nbTurn = data[0];
 			settings.door.mode = data[1] as 0|1|2|3;
 		})
+		.catch((error) => {
+				console.error('readDoor', error);
+			})
 
 		readCloseDoor()
 		.then(data =>{
+			console.debug('close data',data)
 			settings.close.light.value = data[1];
 			settings.close.clock.value = (data[2]<10?"0"+data[2]:data[2])+":"+data[3];
 			settings.close.light.active =  data[0] == 0 || data[0] == 2?false:true;
@@ -69,9 +74,13 @@
 			settings.close.condition =  data[0] == 4 ?'and':'or';
 
 		})
+		.catch((error) => {
+				console.error('readCloseDoor', error);
+			})
 
 		readOpenDoor()
 		.then(data =>{
+			console.debug('open data',data)
 			settings.open.light.value = data[1];
 			settings.open.clock.value = (data[2]<10?"0"+data[2]:data[2])+":"+data[3];
 			settings.open.light.active =  data[0] == 0 || data[0] == 2?false:true;
@@ -79,6 +88,9 @@
 			settings.open.condition =  data[0] == 4 ?'and':'or';
 
 		})
+		.catch((error) => {
+				console.error('readOpenDoor', error);
+			})
 
 	});
 

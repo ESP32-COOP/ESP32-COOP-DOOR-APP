@@ -122,6 +122,7 @@ export async function writeDate(){
         let bytes: number[] = getBytesFromLong(now);
         console.log(now,bytes,getLongFromBytes(bytes))
         let buffer = new Uint8Array(bytes).buffer;
+        console.debug("buffer",buffer)
         await localBLE.dateChar.writeValue(buffer);
         return true
 
@@ -215,6 +216,7 @@ export function getLongFromBytesBuffer(bytes: DataView) {
   return result;
 }
 export function getArryFromBuffer(bytes : DataView,len: number){
+    console.debug("lenght", bytes)
     let result = [];
     for (let i = 0; i < len; i++) {
         result.push( bytes.getUint8(i));
