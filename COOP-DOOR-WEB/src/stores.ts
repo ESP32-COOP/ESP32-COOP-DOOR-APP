@@ -1,8 +1,9 @@
 import { writable } from 'svelte/store'
 import type { BLEType } from '$lib/script/BLE'
 import type { LightDTO } from './types/lightDTO';
+import type { DoorCondidtionDTO } from './types/openDoorDTO';
+import type { doorSettingsDTO } from './types/doorSettingsDTO';
  
-
   
 export let BLE = writable<BLEType>( {
     device: undefined,
@@ -27,3 +28,25 @@ export let light = writable<LightDTO>({
 })
 
 export let date = writable<Date>(new Date())
+
+export let openDoor = writable<DoorCondidtionDTO>({
+    lightOption: false,
+    timeOption: false,
+    condition: 'AND' ,
+    lightThreshold: 0,
+    timeThreshold: {hour:0, minute:0}
+})
+
+export let closeDoor = writable<DoorCondidtionDTO>({
+    lightOption: false,
+    timeOption: false,
+    condition: 'AND' ,
+    lightThreshold: 0,
+    timeThreshold: {hour:0, minute:0}
+})
+
+
+export let doorSettings = writable<doorSettingsDTO>({
+    nbTurn: 1,
+    mode: 0
+})

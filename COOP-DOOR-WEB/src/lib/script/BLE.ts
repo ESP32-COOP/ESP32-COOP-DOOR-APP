@@ -216,7 +216,6 @@ export function getLongFromBytesBuffer(bytes: DataView) {
   return result;
 }
 export function getArryFromBuffer(bytes : DataView,len: number){
-    console.debug("lenght", bytes)
     let result = [];
     for (let i = 0; i < len; i++) {
         result.push( bytes.getUint8(i));

@@ -5,7 +5,7 @@
 	import { onDestroy, onMount } from 'svelte';
 	import Popup from '$lib/components/Popup.svelte';
 	import type { LightDTO } from '../../types/lightDTO';
-	import { light } from '../../stores';
+	import { date, light } from '../../stores';
 
 	let deviceDate = new Date();
 	const options: Intl.DateTimeFormatOptions = {
@@ -19,8 +19,10 @@
 	let deviceConnected: Boolean | BluetoothRemoteGATTServer = true;
 
 	let lightValue: number = 0;
+	let localDate: Date = new Date();
 
-    const unsubscribe = light.subscribe((value) => lightValue = value.value)
+	const unsubscribeDate = date.subscribe((value) => localDate = value);
+    const unsubscribeLight = light.subscribe((value) => lightValue = value.value);
 
 	$: timeoutIdDate, timeoutIdLight,null,  deviceConnected = isDeviceConnected()
 
@@ -76,7 +78,7 @@
 	async function updateDate() {
 		let value = await readDate();
 		if (value) {
-			deviceDate = new Date(value * 1000);
+			date.set(new Date(value * 1000));
 
 			console.log(
 				'reading date D...',
@@ -100,7 +102,7 @@
 	<div class="bg-[url('/coop.svg')] bg-center bg-no-repeat" />
 	<div class="mx-4 grid    h-full w-auto grid-cols-2 gap-4">
 		<SmallBadge {...lightSmallBadgeData} value={lightValue} />
-		<SmallBadge {...dateSmallBadgeData} value={deviceDate} />
+		<SmallBadge {...dateSmallBadgeData} value={localDate} />
 	</div>
 </div>
 {#if !deviceConnected }

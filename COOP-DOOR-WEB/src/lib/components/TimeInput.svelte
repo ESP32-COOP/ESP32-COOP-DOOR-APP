@@ -1,6 +1,38 @@
 <script lang="ts">
+	import { onMount } from "svelte";
+	import type { Timestamp } from "../../types/openDoorDTO";
+
 	export let active: boolean = true;
-	export let value = "";
+	export let value :Timestamp ;
+
+	let selectedTime: string;
+
+	function setDate(date: Timestamp){
+		const hourString = date.hour.toString().padStart(2, "0");
+		const minuteString = date.minute.toString().padStart(2, "0");
+		selectedTime =  `${hourString}:${minuteString}`;
+	}
+
+	function getDate(){
+		if (selectedTime){
+			const [hourString, minuteString] = selectedTime.split(":");
+			const hour = parseInt(hourString, 10);
+			const minute = parseInt(minuteString, 10);
+			value = {hour: hour, minute: minute}
+		}
+		
+	}
+
+	onMount(()=>{
+		setDate(value);
+	})
+	
+
+	//reactive
+	$: selectedTime, getDate();
+	$: setDate(value);
+
+
 </script>
 
 <div
@@ -18,7 +50,7 @@
 	<input
 		class="w-full rounded-xl bg-slate-500 p-2 text-xl font-bold text-white"
 		type="time"
-		bind:value
+		bind:value={selectedTime}
 		disabled={!active}
 	/>
 </div>

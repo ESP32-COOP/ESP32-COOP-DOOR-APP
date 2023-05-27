@@ -1,7 +1,7 @@
 export function betterTimeDisplay(deltaTime: number) {
     const seconds = Math.abs(Math.floor(deltaTime / 1000)); // Convert deltaTime to seconds
     const sign =  Math.floor(deltaTime / 1000) >= 0 ? '' : '-'; // Determine the sign
-
+    
     switch (true) {
       case seconds < 60:
         return sign + seconds + ' seconds';
