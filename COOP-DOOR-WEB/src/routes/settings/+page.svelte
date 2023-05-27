@@ -4,7 +4,6 @@
 	import CloseDoorForm from '$lib/components/CloseDoorForm.svelte';
 	import SettingsDoorForm from '$lib/components/SettingsDoorForm.svelte';
 
-	let snakManager: SnackBar;
 
 	let page: string | null = 'close';
 	page = sessionStorage.getItem('page');
@@ -67,4 +66,4 @@
 		</div>
 	</div>
 </div>
-<SnackBar bind:this={snakManager} />
+<SnackBar  />

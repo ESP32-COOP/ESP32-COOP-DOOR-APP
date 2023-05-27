@@ -3,6 +3,7 @@ import type { BLEType } from '$lib/script/BLE'
 import type { LightDTO } from './types/lightDTO';
 import type { DoorCondidtionDTO } from './types/openDoorDTO';
 import type { doorSettingsDTO } from './types/doorSettingsDTO';
+import type { Toast } from './types/Toast';
  
   
 export let BLE = writable<BLEType>( {
@@ -50,3 +51,9 @@ export let doorSettings = writable<doorSettingsDTO>({
     nbTurn: 1,
     mode: 0
 })
+
+export let toastQueue = writable<Toast[]>([]);
+
+export const showToast = (toast: Toast) => {
+    toastQueue.update((toasts) => [...toasts, toast]);
+  };

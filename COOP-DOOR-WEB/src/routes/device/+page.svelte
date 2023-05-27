@@ -1,13 +1,11 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
 	import SmallBadge from '$lib/components/SmallBadge.svelte';
 	import { isDeviceConnected, readDate, readLight } from '$lib/script/BLE';
 	import { onDestroy, onMount } from 'svelte';
 	import Popup from '$lib/components/Popup.svelte';
-	import type { LightDTO } from '../../types/lightDTO';
 	import { date, light } from '../../stores';
+	import SnackBar from '$lib/components/SnackBar.svelte';
 
-	let deviceDate = new Date();
 	const options: Intl.DateTimeFormatOptions = {
 		timeZone: 'Europe/Paris',
 		hour12: false,
@@ -21,10 +19,10 @@
 	let lightValue: number = 0;
 	let localDate: Date = new Date();
 
-	const unsubscribeDate = date.subscribe((value) => localDate = value);
-    const unsubscribeLight = light.subscribe((value) => lightValue = value.value);
+	const unsubscribeDate = date.subscribe((value) => (localDate = value));
+	const unsubscribeLight = light.subscribe((value) => (lightValue = value.value));
 
-	$: timeoutIdDate, timeoutIdLight,null,  deviceConnected = isDeviceConnected()
+	$: timeoutIdDate, timeoutIdLight, null, (deviceConnected = isDeviceConnected());
 
 	const lightSmallBadgeData = {
 		title: 'Light Sensor',
@@ -51,11 +49,11 @@
 	onDestroy(() => {
 		// If a timeout is still active, clear it when the component is destroyed
 		if (timeoutIdDate !== null) {
-			console.log("clear date timeout");
+			console.log('clear date timeout');
 			clearTimeout(timeoutIdDate);
 		}
 		if (timeoutIdLight !== null) {
-			console.log("clear light timeout");
+			console.log('clear light timeout');
 			clearTimeout(timeoutIdLight);
 		}
 	});
@@ -63,7 +61,7 @@
 	async function updateLight() {
 		readLight()
 			.then((value) => {
-				light.set({value: value[0],min: value[1],max: value[2]})
+				light.set({ value: value[0], min: value[1], max: value[2] });
 				console.log('reading light D...', value[0]);
 			})
 			.catch((error) => {
@@ -80,10 +78,7 @@
 		if (value) {
 			date.set(new Date(value * 1000));
 
-			console.log(
-				'reading date D...',
-				new Date(value * 1000).toLocaleTimeString('en-US', options)
-			);
+			console.log('reading date D...', new Date(value * 1000).toLocaleTimeString('en-US', options));
 		}
 		timeoutIdDate = setTimeout(() => updateDate(), 10000);
 	}
@@ -105,6 +100,8 @@
 		<SmallBadge {...dateSmallBadgeData} value={localDate} />
 	</div>
 </div>
-{#if !deviceConnected }
-<Popup message={'The device is disconnected ...'} redirect={"/"}/>
+{#if !deviceConnected}
+	<Popup message={'The device is disconnected ...'} redirect={'/'} />
 {/if}
+
+<SnackBar />
