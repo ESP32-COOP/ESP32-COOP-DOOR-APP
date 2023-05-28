@@ -1,40 +1,53 @@
 <script lang="ts">
-	import { writeOpenDoor } from '$lib/script/BLE';
+	import { readOpenDoor, writeOpenDoor } from '$lib/script/BLE';
+	import { onMount } from 'svelte';
 	import { openDoor } from '../../stores';
-	import type { DoorCondidtionDTO } from '../../types/openDoorDTO';
+	import type { DoorConditionDTO } from '../../types/doorCondition';
 	import LightInput from './LightInput.svelte';
 	import OptionBadge from './OptionBadge.svelte';
 	import TimeInput from './TimeInput.svelte';
 
-	let localOpenSettings: DoorCondidtionDTO;
+	let localOpenSettings: DoorConditionDTO;
 
-	const unsubscribe = openDoor.subscribe((value) => localOpenSettings = value)
+	const unsubscribe = openDoor.subscribe((value) => (localOpenSettings = value));
 
-	$: console.log("localOpenSettings", localOpenSettings)
-
+	$: console.log('localOpenSettings', localOpenSettings);
 
 	function handleDoorOpen() {
 		let mode = 0;
 		mode = localOpenSettings.lightOption ? mode + 1 : mode;
 		mode = localOpenSettings.timeOption ? mode + 2 : mode;
-		mode = localOpenSettings.condition == 'OR' && mode != 0 ? mode : mode + 1;
-		console.log("writeOpenDoor",mode, localOpenSettings.lightThreshold, localOpenSettings.timeThreshold)
+		mode = localOpenSettings.condition == 'OR' && mode === 3 ? mode + 1 : mode;
+		console.log(
+			'writeOpenDoor',
+			mode,
+			localOpenSettings.lightThreshold,
+			localOpenSettings.timeThreshold
+		);
 
-		writeOpenDoor(mode, localOpenSettings.lightThreshold, localOpenSettings.timeThreshold.hour, 
-		localOpenSettings.timeThreshold.minute);
+		writeOpenDoor(
+			mode,
+			localOpenSettings.lightThreshold,
+			localOpenSettings.timeThreshold.hour,
+			localOpenSettings.timeThreshold.minute
+		);
 	}
+
+	onMount(async () => {
+		openDoor.set(await readOpenDoor());
+	});
 </script>
 
 <div
-	class="grid overflow-hidden grid-cols-1 gap-2 w-full h-full"
+	class="grid h-full w-full grid-cols-1 gap-2 overflow-hidden"
 	style="grid-template-rows : 2.5fr 5fr .5fr 5fr 2fr ;"
 >
 	<div
-		class="grid grid-cols-2 gap-2 items-center p-1 rounded-xl bg-slate-50"
+		class="grid grid-cols-2 items-center gap-2 rounded-xl bg-slate-50 p-1"
 		style="grid-template-columns : 4rem 1fr ;"
 	>
 		<h3 class="ml-2">option</h3>
-		<div class="flex flex-row gap-2 w-full h-full">
+		<div class="flex h-full w-full flex-row gap-2">
 			<OptionBadge icon="light" hint="light" bind:active={localOpenSettings.lightOption} />
 			<OptionBadge icon="clock" hint="time" bind:active={localOpenSettings.timeOption} />
 		</div>
@@ -49,7 +62,7 @@
 	<div class="flex items-center">
 		<select
 			bind:value={localOpenSettings.condition}
-			class="px-2 ml-5 text-white uppercase rounded-md bg-slate-500"
+			class="ml-5 rounded-md bg-slate-500 px-2 uppercase text-white"
 		>
 			<option value="AND">and</option>
 			<option value="OR">or</option>
@@ -60,7 +73,7 @@
 		bind:value={localOpenSettings.timeThreshold}
 	/>
 
-	<button on:click={handleDoorOpen} class="text-2xl font-bold uppercase rounded-xl bg-slate-50"
+	<button on:click={handleDoorOpen} class="rounded-xl bg-slate-50 text-2xl font-bold uppercase"
 		>apply</button
 	>
 </div>

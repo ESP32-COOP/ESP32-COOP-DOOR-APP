@@ -1,4 +1,4 @@
-export interface DoorCondidtionDTO{
+export interface DoorConditionDTO {
     lightOption: boolean,
     timeOption: boolean,
     condition: 'AND' | 'OR',

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from "svelte";
-	import type { Timestamp } from "../../types/openDoorDTO";
+	import type { Timestamp } from "../../types/doorCondition";
 
 	export let active: boolean = true;
 	export let value :Timestamp ;
@@ -36,7 +36,7 @@
 </script>
 
 <div
-	class="grid grid-cols-3 items-center gap-5 rounded-xl bg-slate-50 p-3 {active
+	class="grid grid-cols-3 items-center gap-5 rounded-xl bg-slate-50 p-3  {active
 		? ''
 		: 'opacity-50'}"
 	style="grid-template-columns : 1fr 1fr 1fr ;"
