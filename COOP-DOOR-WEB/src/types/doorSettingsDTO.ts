@@ -1,4 +1,6 @@
+import type { DoorMode } from "./doorMode";
+
 export interface doorSettingsDTO{
     nbTurn: number,
-    mode: 0 | 1 | 2 | 3 
+    mode: DoorMode
 }

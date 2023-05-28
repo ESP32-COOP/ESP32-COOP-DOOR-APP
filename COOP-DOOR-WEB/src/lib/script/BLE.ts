@@ -1,6 +1,7 @@
 import { BLE } from '../../stores';
 import { onDestroy, onMount } from 'svelte';
 import type { DoorConditionDTO } from '../../types/doorCondition';
+import type { DoorMode } from '../../types/doorMode';
 
 
 export let localBLE: BLEType;
@@ -142,7 +143,7 @@ export function getBytesFromLong(x: number): Array<number> {
     return bytes;
 }
 
-export function writeDoor(turn: number, status: 0 | 1 | 2 | 3) {
+export function writeDoor(turn: number, status: DoorMode) {
     if (localBLE.doorChar) {
         let buffer = new Uint8Array([turn * 10, status]).buffer;
 

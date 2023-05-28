@@ -4,6 +4,7 @@
 	import RadioButton from './RadioButton.svelte';
 	import type { doorSettingsDTO } from '../../types/doorSettingsDTO';
 	import { doorSettings, showToast } from '../../stores';
+	import type { DoorMode } from '../../types/doorMode';
 
     let localDoorSettings: doorSettingsDTO;
     const unsubscribe = doorSettings.subscribe(value => localDoorSettings= value)
@@ -12,7 +13,7 @@
 		readDoor()
 			.then((data) => {
 				console.debug('door data', data);
-                doorSettings.set({nbTurn: data[0], mode: data[1] as 0 | 1 | 2 | 3})
+                doorSettings.set({nbTurn: data[0], mode: data[1] as DoorMode})
 			})
 			.catch((error) => {
 				console.error('readDoor', error);
@@ -22,7 +23,7 @@
 	function setDoorValue(
 		event: MouseEvent | null,
 		nbTurn: number = localDoorSettings.nbTurn,
-		mode: 0 | 1 | 2 | 3 = localDoorSettings.mode
+		mode: DoorMode = localDoorSettings.mode
 	) {
 		console.log('door values.. ', nbTurn, mode);
 
@@ -33,7 +34,7 @@
 	}
 
 	function testDoor() {
-		setDoorValue(null, localDoorSettings.nbTurn, 3);
+		setDoorValue(null, localDoorSettings.nbTurn, 2);
 	}
 </script>
 
