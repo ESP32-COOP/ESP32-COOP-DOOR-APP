@@ -1,16 +1,14 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
 	import {
-		readDate,
 		writeDate,
-		getDevice,
 		localBLE,
 		getLongFromBytesBuffer
 	} from '$lib/script/BLE';
 	import { betterTimeDisplay } from '$lib/script/Time';
 	import { onDestroy, onMount } from 'svelte';
-	import { date, showToast } from '../../../stores';
+	
 	import SnackBar from '$lib/components/SnackBar.svelte';
+	import { date } from '../../../../stores';
 
 	let localDate: Date = new Date();
 

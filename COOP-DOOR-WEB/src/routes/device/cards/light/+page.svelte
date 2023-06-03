@@ -1,9 +1,10 @@
 <script lang="ts">
 	import { getArryFromBuffer, localBLE, resetLight } from "$lib/script/BLE";
 	import { onDestroy, onMount } from "svelte";
-	import type { LightDTO } from "../../../types/lightDTO";
-	import { light } from "../../../stores";
+	
+	import {  light } from '../../../../stores';
 	import SnackBar from "$lib/components/SnackBar.svelte";
+	import type { LightDTO } from "../../../../types/lightDTO";
     const divider = 1000 / 255 // 255 max value of bytes
     let localLight: LightDTO;
 

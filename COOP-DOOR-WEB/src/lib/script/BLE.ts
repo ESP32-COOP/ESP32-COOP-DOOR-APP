@@ -6,6 +6,8 @@ import type { DoorMode } from '../../types/doorMode';
 
 export let localBLE: BLEType;
 
+let onConnectListeners : Function[] = [];
+
 const unsubscribe = BLE.subscribe((value) => localBLE = value)
 
 function updateBLE() {
@@ -85,18 +87,33 @@ export async function connectGATT(callback: Function = (msg: string) => { }) {
         console.log("getting Door Open char...")
         localBLE.doorOpenChar = await localBLE.service.getCharacteristic(localBLE.doorOpenCharUUID);
         updateBLE();
+        callOnConnectListener();
     }
 
 
+}
+
+export function addOnConnectListener(func: Function){
+    onConnectListeners.push(func)
+}
+
+export function callOnConnectListener(){
+    for (const func of onConnectListeners) {
+        func();
+      }
 }
 
 export function isDeviceConnected() {
     return localBLE.device != undefined && localBLE.device.gatt != undefined && localBLE.device.gatt.connected
 }
 
-export async function getDevice() {
+export async function getDeviceGatt() {
     if (localBLE.device != undefined && localBLE.device.gatt != undefined) return await localBLE.device.gatt.connect()
     return false
+}
+
+export  function getDevice(): BluetoothDevice | undefined {
+    return localBLE.device ;
 }
 
 export async function readLight(): Promise<number[]> {

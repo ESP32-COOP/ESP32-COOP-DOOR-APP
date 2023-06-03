@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { getDeviceInfo, getDevice, connectGATT } from '$lib/script/BLE';
+	import { getDeviceInfo, getDeviceGatt, connectGATT } from '$lib/script/BLE';
 	import SnackBar from '$lib/components/SnackBar.svelte';
 	import { showToast } from '../stores';
 	let connect_text = 'connect';
@@ -20,7 +20,7 @@
 			connect_text = 'connect';
 		}
 
-		if (await getDevice()) {
+		if (await getDeviceGatt()) {
 			goto('device');
 		} else {
 			connect_text = 'connect';

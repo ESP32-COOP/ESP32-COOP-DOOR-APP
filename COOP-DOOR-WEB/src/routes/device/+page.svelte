@@ -22,7 +22,7 @@
 	const unsubscribeDate = date.subscribe((value) => (localDate = value));
 	const unsubscribeLight = light.subscribe((value) => (lightValue = value.value));
 
-	$: timeoutIdDate, timeoutIdLight, null, (deviceConnected = isDeviceConnected());
+	$: timeoutIdDate, timeoutIdLight, (deviceConnected = isDeviceConnected());
 
 	const lightSmallBadgeData = {
 		title: 'Light Sensor',
@@ -100,8 +100,6 @@
 		<SmallBadge {...dateSmallBadgeData} value={localDate} />
 	</div>
 </div>
-{#if !deviceConnected}
-	<Popup message={'The device is disconnected ...'} redirect={'/'} />
-{/if}
+
 
 <SnackBar />
