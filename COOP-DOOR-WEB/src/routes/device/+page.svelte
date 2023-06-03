@@ -2,7 +2,6 @@
 	import SmallBadge from '$lib/components/SmallBadge.svelte';
 	import { isDeviceConnected, readDate, readLight } from '$lib/script/BLE';
 	import { onDestroy, onMount } from 'svelte';
-	import Popup from '$lib/components/Popup.svelte';
 	import { date, light } from '../../stores';
 	import SnackBar from '$lib/components/SnackBar.svelte';
 
@@ -30,7 +29,7 @@
 		subTitleType: 'value',
 		value: lightValue,
 		badgeType: 'dark',
-		link: 'cards/light'
+		link: 'device/cards/light'
 	};
 
 	const dateSmallBadgeData = {
@@ -38,7 +37,7 @@
 		subTitle: 'britness level',
 		subTitleType: 'value',
 		icon: 'clock',
-		link: 'cards/clock'
+		link: 'device/cards/clock'
 	};
 
 	onMount(async () => {
@@ -86,9 +85,9 @@
 
 <div class="grid h-screen grid-cols-1 p-2 " style="grid-template-rows : 1fr 1fr 8fr 3fr;">
 	<div class="flex h-full w-full flex-row items-center">
-		<a class="ml-auto" href="settings">
+		<a class="ml-auto" href="device/settings">
 			<div class=" m-2 ml-auto h-fit rounded-full bg-slate-300 bg-opacity-80 p-2">
-				<img src="gear.svg" alt="gear" />
+				<img src="/gear.svg" alt="gear" />
 			</div>
 		</a>
 	</div>

@@ -16,7 +16,7 @@
 	<div class="flex flex-row items-center w-full h-full">
 		<a class="" href="/device">
 			<div class="p-2 m-2 ml-8 bg-opacity-80 rounded-full h-fit bg-slate-300">
-				<img class="p-1 w-6 h-6 rotate-180" src="arrow.svg" alt="gear" />
+				<img class="p-1 w-6 h-6 rotate-180" src="/arrow.svg" alt="gear" />
 			</div>
 		</a>
 	</div>

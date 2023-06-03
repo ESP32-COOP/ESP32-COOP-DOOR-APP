@@ -1,6 +1,6 @@
 <script lang="ts" >
 	import Popup from "$lib/components/Popup.svelte";
-	import { type BLEType, getDevice, addOnConnectListener } from "$lib/script/BLE";
+	import { type BLEType, getDevice } from "$lib/script/BLE";
 	import { onMount, onDestroy } from "svelte";
 	import { BLE } from "../../stores";
 
@@ -13,14 +13,12 @@
       const unsubscribe = BLE.subscribe((value) => localBLE = value)
 
 
-      const addListener = () => {
+    
+
+      onMount(async() => {
             device  =  getDevice()
                   console.log("device",device)
                   device?.addEventListener('gattserverdisconnected', onDeviceDisconnect);
-      }
-
-      onMount(async() => {
-            addOnConnectListener(addListener)
             
 
             
