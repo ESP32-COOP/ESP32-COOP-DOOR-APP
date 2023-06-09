@@ -14,17 +14,19 @@
 			await connectGATT((msg:string )=> {
 				showToast({type:'success', message: msg , duration:2000});
 			});
+			
+			if (await getDeviceGatt()) {
+				goto('device');
+			} else {
+				connect_text = 'connect';
+			}
 		} catch (error) {
 			console.error(error);
 			showToast({type:'error', message: error as string});
 			connect_text = 'connect';
 		}
 
-		if (await getDeviceGatt()) {
-			goto('device');
-		} else {
-			connect_text = 'connect';
-		}
+		
 	}
 </script>
 

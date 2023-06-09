@@ -16,9 +16,14 @@
     
 
       onMount(async() => {
-            device  =  getDevice()
-                  console.log("device",device)
+            device  =  getDevice();
+            if (device?.gatt?.connected){
                   device?.addEventListener('gattserverdisconnected', onDeviceDisconnect);
+            }else{
+                  onDeviceDisconnect(new Event('Failed to connect to device'))
+            }
+            console.log("device",device?.gatt?.connected)
+            
             
 
             

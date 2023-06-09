@@ -68,8 +68,8 @@ export async function getDeviceInfo() {
 
 export async function connectGATT(callback: Function = (msg: string) => { }) {
     if (localBLE.device != undefined && localBLE.device.gatt != undefined) {
-        console.log("device status", localBLE.device.gatt.connected)
         localBLE.GATT = await localBLE.device.gatt.connect()
+        console.log("device status", localBLE.device.gatt.connected)
     }
     if (localBLE.GATT != undefined) {
         console.log("getting service...")
