@@ -133,6 +133,7 @@ export async function writeDate() {
         let now = Math.round(Date.now() / 1000); //Date.now();
         let bytes: number[] = getBytesFromLong(now);
         console.log(now, bytes, getLongFromBytes(bytes))
+        bytes.push((new Date().getTimezoneOffset()/60) +12 )
         let buffer = new Uint8Array(bytes).buffer;
         console.debug("buffer", buffer)
         await localBLE.dateChar.writeValue(buffer);

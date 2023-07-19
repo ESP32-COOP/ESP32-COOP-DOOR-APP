@@ -101,7 +101,7 @@
 			class="grid grid-cols-2 items-center justify-center gap-5 rounded-xl bg-slate-50 "
 			style="grid-template-columns : 2fr 8fr ;"
 		>
-			<p class="ml-2  w-fit">delta :</p>
+			<p class="ml-2  w-fit whitespace-nowrap">delta :</p>
 			{#if Math.abs(Math.floor((localDate.getTime() - datePhone.getTime()) / 1000)) < 60}
 			<h4 class="text-3xl text-green-500 ">
 				{ betterTimeDisplay(localDate.getTime() - datePhone.getTime())}
