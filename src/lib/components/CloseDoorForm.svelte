@@ -24,7 +24,7 @@
 		console.log('mode', localCloseSettings);
 		writeCloseDoor(
 			mode,
-			Math.floor(localCloseSettings.lightThreshold/4),
+			localCloseSettings.lightThreshold,
 			localCloseSettings.timeThreshold.hour,
 			localCloseSettings.timeThreshold.minute
 		);

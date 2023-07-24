@@ -27,7 +27,7 @@
 
 		writeOpenDoor(
 			mode,
-			Math.floor(localOpenSettings.lightThreshold/4),
+			localOpenSettings.lightThreshold,
 			localOpenSettings.timeThreshold.hour,
 			localOpenSettings.timeThreshold.minute
 		);

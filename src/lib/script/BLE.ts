@@ -184,15 +184,14 @@ export async function resetLight() {
 
 export function writeCloseDoor(mode: number, light: number, hour: number, minute: number) {
     if (localBLE.doorCloseChar) {
-        console.debug("writeCloseDoor", [mode, light, hour, minute])
-        let buffer = new Uint8Array([mode, light, hour, minute]).buffer;
+        let buffer = new Uint8Array([mode, Math.floor(light/4), hour, minute]).buffer;
         localBLE.doorCloseChar.writeValue(buffer);
     }
 }
 
 export function writeOpenDoor(mode: number, light: number, hour: number, minute: number) {
     if (localBLE.doorOpenChar) {
-        let buffer = new Uint8Array([mode, light, hour, minute]).buffer;
+        let buffer = new Uint8Array([mode, Math.floor(light/4), hour, minute]).buffer;
         localBLE.doorOpenChar.writeValue(buffer);
     }
 }
@@ -205,7 +204,7 @@ export async function readCloseDoor(): Promise<DoorConditionDTO> {
         res = {
             condition: values[0] === 4 ? 'OR' : 'AND',
             lightOption: values[0] === 1 || values[0] >= 3 ? true : false,
-            lightThreshold: values[1],
+            lightThreshold: values[1]*4,
             timeOption: values[0] >= 2 ? true : false,
             timeThreshold: { hour: values[2], minute: values[3] }
         }
@@ -230,7 +229,7 @@ export async function readOpenDoor(): Promise<DoorConditionDTO> {
         res = {
             condition: values[0] === 4 ? 'OR' : 'AND',
             lightOption: values[0] === 1 || values[0] >= 3 ? true : false,
-            lightThreshold: values[1],
+            lightThreshold: values[1]*4,
             timeOption: values[0] >= 2 ? true : false,
             timeThreshold: { hour: values[2], minute: values[3] }
         }
