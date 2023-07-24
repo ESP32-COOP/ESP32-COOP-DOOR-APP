@@ -6,14 +6,15 @@
 	import { doorSettings, showToast } from '../../stores';
 	import type { DoorMode } from '../../types/doorMode';
 
-    let localDoorSettings: doorSettingsDTO;
-    const unsubscribe = doorSettings.subscribe(value => localDoorSettings= value)
+	let localDoorSettings: doorSettingsDTO;
+	let unsaved: boolean = false;
+	const unsubscribe = doorSettings.subscribe((value) => (localDoorSettings = value));
 
 	onMount(async () => {
 		readDoor()
 			.then((data) => {
 				console.debug('door data', data);
-                doorSettings.set({nbTurn: data[0], mode: data[1] as DoorMode})
+				doorSettings.set({ nbTurn: data[0], mode: data[1] as DoorMode });
 			})
 			.catch((error) => {
 				console.error('readDoor', error);
@@ -29,13 +30,21 @@
 
 		writeDoor(nbTurn, mode)?.catch((error) => {
 			console.error(error);
-			showToast({type:'error',message: error});
+			showToast({ type: 'error', message: error });
 		});
+		showToast({ type: 'success', message: 'Values sent', duration: 2000 });
+		unsaved = false;
 	}
 
 	function testDoor() {
 		setDoorValue(null, localDoorSettings.nbTurn, 2);
 	}
+
+	function statusChanged(x: any, y: any) {
+		unsaved = true;
+	}
+
+	$: statusChanged(localDoorSettings.nbTurn, localDoorSettings.mode);
 </script>
 
 <div class="grid h-full w-full grid-cols-2 gap-5 " style="grid-template-columns : 1fr 1.5fr ;">
@@ -67,8 +76,11 @@
 		<RadioButton bind:mode={localDoorSettings.mode} />
 		<div class="grid h-full w-full grid-cols-2 gap-5 ">
 			<button on:click={testDoor} class="rounded-xl bg-slate-50 font-bold uppercase">test</button>
-			<button on:click={setDoorValue} class="rounded-xl bg-slate-50 font-bold uppercase"
-				>apply</button
+			<button
+				on:click={setDoorValue}
+				class="rounded-xl bg-slate-50 font-bold uppercase"
+				class:bg-slate-500={unsaved}
+				class:text-white={unsaved}>apply</button
 			>
 		</div>
 	</div>

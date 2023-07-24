@@ -1,13 +1,14 @@
 <script lang="ts">
 	import { readOpenDoor, writeOpenDoor } from '$lib/script/BLE';
 	import { onMount } from 'svelte';
-	import { openDoor } from '../../stores';
+	import { openDoor, showToast } from '../../stores';
 	import type { DoorConditionDTO } from '../../types/doorCondition';
 	import LightInput from './LightInput.svelte';
 	import OptionBadge from './OptionBadge.svelte';
 	import TimeInput from './TimeInput.svelte';
 
 	let localOpenSettings: DoorConditionDTO;
+	let unsaved = false;
 
 	const unsubscribe = openDoor.subscribe((value) => (localOpenSettings = value));
 
@@ -31,6 +32,11 @@
 			localOpenSettings.timeThreshold.hour,
 			localOpenSettings.timeThreshold.minute
 		);
+		showToast({ type: 'success', message: 'Values sent', duration: 2000 });
+	}
+
+	function statusChanged(x: any, y: any) {
+		unsaved = true;
 	}
 
 	onMount(async () => {
@@ -73,7 +79,10 @@
 		bind:value={localOpenSettings.timeThreshold}
 	/>
 
-	<button on:click={handleDoorOpen} class="rounded-xl bg-slate-50 text-2xl font-bold uppercase"
-		>apply</button
+	<button
+		on:click={handleDoorOpen}
+		class="rounded-xl bg-slate-50 text-2xl font-bold uppercase"
+		class:bg-slate-500={unsaved}
+		class:text-white={unsaved}>apply</button
 	>
 </div>
