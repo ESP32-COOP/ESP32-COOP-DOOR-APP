@@ -47,6 +47,5 @@ Here is a simple demo of the current functionality
 - [x] Setup basic Svelte Kit
 - [x] Layout different pages
 - [x] Add interactive functionalities
-- [ ] Integrate Ble lib
-- [ ] Finish integration with 
-- [ ] [ESP32-COOP-DOOR-CORE](https://github.com/ESP32-COOP/ESP32-COOP-DOOR-CORE)
+- [x] Integrate Ble lib
+- [x] Finish integration with [ESP32-COOP-DOOR-CORE](https://github.com/ESP32-COOP/ESP32-COOP-DOOR-CORE)
