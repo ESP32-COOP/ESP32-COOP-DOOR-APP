@@ -6,11 +6,17 @@
 	import LightInput from './LightInput.svelte';
 	import OptionBadge from './OptionBadge.svelte';
 	import TimeInput from './TimeInput.svelte';
+	import { error } from '@sveltejs/kit';
+	import { areDictionariesEqual } from '$lib/script/Utils';
 
 	let localCloseSettings: DoorConditionDTO;
+	let localCloseSettingsReference: DoorConditionDTO;
 	let unsaved = false;
 
-	const unsubscribe = closeDoor.subscribe((value) => (localCloseSettings = value));
+	const unsubscribe = closeDoor.subscribe((value) => {
+		localCloseSettings = value;
+		localCloseSettingsReference = {...value};
+	});
 
 	$: console.log('localOpenSettings', localCloseSettings);
 
@@ -28,16 +34,34 @@
 			localCloseSettings.lightThreshold,
 			localCloseSettings.timeThreshold.hour,
 			localCloseSettings.timeThreshold.minute
-		);
-		showToast({ type: 'success', message: 'Values sent', duration: 2000 });
+		)
+			.then((_) => {
+				showToast({ type: 'success', message: 'Success: Values sent', duration: 2000 });
+				closeDoor.set(localCloseSettings);
+				unsaved = false;
+
+			})
+			.catch((error) => {
+				console.log('failed', error);
+				showToast({ type: 'error', message: error });
+			});
 	}
 
-	function statusChanged(x: any, y: any) {
-		unsaved = true;
+	function statusChanged() {
+		unsaved = !areDictionariesEqual(localCloseSettings, localCloseSettingsReference);
 	}
+
+	$: localCloseSettings.lightOption,
+		localCloseSettings.lightThreshold,
+		localCloseSettings.condition,
+		localCloseSettings.timeOption,
+		localCloseSettings.timeThreshold.hour,
+		localCloseSettings.timeThreshold.minute,
+		statusChanged();
 
 	onMount(async () => {
 		closeDoor.set(await readCloseDoor());
+		unsaved = false;
 	});
 </script>
 

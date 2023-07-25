@@ -29,7 +29,6 @@
         const characteristic = ev.target as BluetoothRemoteGATTCharacteristic;
         const value = characteristic.value as DataView;
         date.set(new Date(getLongFromBytesBuffer(value)*1000));
-		console.log("new value",getLongFromBytesBuffer(value))
 	}
 
 	
@@ -61,7 +60,7 @@
 		writeDate()
 			.then((res) => {
 				console.log('updated!', res,localBLE.dateChar);
-				showToast({type:'info', message: "Values sent" , duration:2000});
+				showToast({type:'success', message: "Values sent" , duration:2000});
 			})
 			.catch((error) => {
 				console.log('failed', error);

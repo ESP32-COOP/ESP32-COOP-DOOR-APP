@@ -6,13 +6,19 @@
 	import LightInput from './LightInput.svelte';
 	import OptionBadge from './OptionBadge.svelte';
 	import TimeInput from './TimeInput.svelte';
+	import { areDictionariesEqual } from '$lib/script/Utils';
 
 	let localOpenSettings: DoorConditionDTO;
+	let localOpenSettingsReference: DoorConditionDTO;
 	let unsaved = false;
 
-	const unsubscribe = openDoor.subscribe((value) => (localOpenSettings = value));
 
-	$: console.log('localOpenSettings', localOpenSettings);
+	const unsubscribe = openDoor.subscribe((value) => {
+		console.log("subscritpnio", localOpenSettings, openDoor)
+		localOpenSettings = value ;
+		localOpenSettingsReference = {...value};
+	});
+
 
 	function handleDoorOpen() {
 		let mode = 0;
@@ -31,13 +37,30 @@
 			localOpenSettings.lightThreshold,
 			localOpenSettings.timeThreshold.hour,
 			localOpenSettings.timeThreshold.minute
-		);
-		showToast({ type: 'success', message: 'Values sent', duration: 2000 });
+		)
+			.then((_) => {
+				showToast({ type: 'success', message: 'Success: Values sent', duration: 2000 });
+				openDoor.set(localOpenSettings);
+				unsaved = false;
+			})
+			.catch((error) => {
+				console.log('failed', error);
+				showToast({ type: 'error', message: error });
+			});
+		
 	}
 
-	function statusChanged(x: any, y: any) {
-		unsaved = true;
+	function statusChanged() {
+		unsaved = !areDictionariesEqual(localOpenSettings , localOpenSettingsReference)
 	}
+
+	$: localOpenSettings.lightOption,
+		localOpenSettings.lightThreshold,
+		localOpenSettings.condition,
+		localOpenSettings.timeOption,
+		localOpenSettings.timeThreshold.hour,
+		localOpenSettings.timeThreshold.minute,
+		statusChanged(), console.log("reactive ",localOpenSettings,localOpenSettingsReference, areDictionariesEqual(localOpenSettings, localOpenSettingsReference),"unsaved",unsaved);
 
 	onMount(async () => {
 		openDoor.set(await readOpenDoor());
