@@ -1,15 +1,22 @@
 <script lang="ts">
 	import { readCloseDoor, writeCloseDoor } from '$lib/script/BLE';
 	import { onMount } from 'svelte';
-	import { closeDoor, openDoor } from '../../stores';
+	import { closeDoor, openDoor, showToast } from '../../stores';
 	import type { DoorConditionDTO } from '../../types/doorCondition';
 	import LightInput from './LightInput.svelte';
 	import OptionBadge from './OptionBadge.svelte';
 	import TimeInput from './TimeInput.svelte';
+	import { error } from '@sveltejs/kit';
+	import { areDictionariesEqual } from '$lib/script/Utils';
 
 	let localCloseSettings: DoorConditionDTO;
+	let localCloseSettingsReference: DoorConditionDTO;
+	let unsaved = false;
 
-	const unsubscribe = closeDoor.subscribe((value) => (localCloseSettings = value));
+	const unsubscribe = closeDoor.subscribe((value) => {
+		localCloseSettings = value;
+		localCloseSettingsReference = {...value};
+	});
 
 	$: console.log('localOpenSettings', localCloseSettings);
 
@@ -27,11 +34,34 @@
 			localCloseSettings.lightThreshold,
 			localCloseSettings.timeThreshold.hour,
 			localCloseSettings.timeThreshold.minute
-		);
+		)
+			.then((_) => {
+				showToast({ type: 'success', message: 'Success: Values sent', duration: 2000 });
+				closeDoor.set(localCloseSettings);
+				unsaved = false;
+
+			})
+			.catch((error) => {
+				console.log('failed', error);
+				showToast({ type: 'error', message: error });
+			});
 	}
+
+	function statusChanged() {
+		unsaved = !areDictionariesEqual(localCloseSettings, localCloseSettingsReference);
+	}
+
+	$: localCloseSettings.lightOption,
+		localCloseSettings.lightThreshold,
+		localCloseSettings.condition,
+		localCloseSettings.timeOption,
+		localCloseSettings.timeThreshold.hour,
+		localCloseSettings.timeThreshold.minute,
+		statusChanged();
 
 	onMount(async () => {
 		closeDoor.set(await readCloseDoor());
+		unsaved = false;
 	});
 </script>
 
@@ -70,7 +100,10 @@
 		bind:value={localCloseSettings.timeThreshold}
 	/>
 
-	<button on:click={handleDoorClose} class="rounded-xl bg-slate-50 text-2xl font-bold uppercase"
-		>apply</button
+	<button
+		on:click={handleDoorClose}
+		class="rounded-xl bg-slate-50 text-2xl font-bold uppercase"
+		class:bg-slate-500={unsaved}
+		class:text-white={unsaved}>apply</button
 	>
 </div>

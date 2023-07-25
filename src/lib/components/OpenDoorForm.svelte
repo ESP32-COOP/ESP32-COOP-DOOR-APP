@@ -1,17 +1,24 @@
 <script lang="ts">
 	import { readOpenDoor, writeOpenDoor } from '$lib/script/BLE';
 	import { onMount } from 'svelte';
-	import { openDoor } from '../../stores';
+	import { openDoor, showToast } from '../../stores';
 	import type { DoorConditionDTO } from '../../types/doorCondition';
 	import LightInput from './LightInput.svelte';
 	import OptionBadge from './OptionBadge.svelte';
 	import TimeInput from './TimeInput.svelte';
+	import { areDictionariesEqual } from '$lib/script/Utils';
 
 	let localOpenSettings: DoorConditionDTO;
+	let localOpenSettingsReference: DoorConditionDTO;
+	let unsaved = false;
 
-	const unsubscribe = openDoor.subscribe((value) => (localOpenSettings = value));
 
-	$: console.log('localOpenSettings', localOpenSettings);
+	const unsubscribe = openDoor.subscribe((value) => {
+		console.log("subscritpnio", localOpenSettings, openDoor)
+		localOpenSettings = value ;
+		localOpenSettingsReference = {...value};
+	});
+
 
 	function handleDoorOpen() {
 		let mode = 0;
@@ -30,8 +37,30 @@
 			localOpenSettings.lightThreshold,
 			localOpenSettings.timeThreshold.hour,
 			localOpenSettings.timeThreshold.minute
-		);
+		)
+			.then((_) => {
+				showToast({ type: 'success', message: 'Success: Values sent', duration: 2000 });
+				openDoor.set(localOpenSettings);
+				unsaved = false;
+			})
+			.catch((error) => {
+				console.log('failed', error);
+				showToast({ type: 'error', message: error });
+			});
+		
 	}
+
+	function statusChanged() {
+		unsaved = !areDictionariesEqual(localOpenSettings , localOpenSettingsReference)
+	}
+
+	$: localOpenSettings.lightOption,
+		localOpenSettings.lightThreshold,
+		localOpenSettings.condition,
+		localOpenSettings.timeOption,
+		localOpenSettings.timeThreshold.hour,
+		localOpenSettings.timeThreshold.minute,
+		statusChanged(), console.log("reactive ",localOpenSettings,localOpenSettingsReference, areDictionariesEqual(localOpenSettings, localOpenSettingsReference),"unsaved",unsaved);
 
 	onMount(async () => {
 		openDoor.set(await readOpenDoor());
@@ -73,7 +102,10 @@
 		bind:value={localOpenSettings.timeThreshold}
 	/>
 
-	<button on:click={handleDoorOpen} class="rounded-xl bg-slate-50 text-2xl font-bold uppercase"
-		>apply</button
+	<button
+		on:click={handleDoorOpen}
+		class="rounded-xl bg-slate-50 text-2xl font-bold uppercase"
+		class:bg-slate-500={unsaved}
+		class:text-white={unsaved}>apply</button
 	>
 </div>

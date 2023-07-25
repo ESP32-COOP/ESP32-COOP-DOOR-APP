@@ -8,7 +8,7 @@
 	import { onDestroy, onMount } from 'svelte';
 	
 	import SnackBar from '$lib/components/SnackBar.svelte';
-	import { date } from '../../../../stores';
+	import { date, showToast } from '../../../../stores';
 
 	let localDate: Date = new Date();
 
@@ -29,7 +29,6 @@
         const characteristic = ev.target as BluetoothRemoteGATTCharacteristic;
         const value = characteristic.value as DataView;
         date.set(new Date(getLongFromBytesBuffer(value)*1000));
-		console.log("new value",getLongFromBytesBuffer(value))
 	}
 
 	
@@ -61,6 +60,7 @@
 		writeDate()
 			.then((res) => {
 				console.log('updated!', res,localBLE.dateChar);
+				showToast({type:'success', message: "Values sent" , duration:2000});
 			})
 			.catch((error) => {
 				console.log('failed', error);
@@ -85,7 +85,7 @@
 				<h3 class="text-2xl">
 					{localDate.getDay()}/{localDate.getMonth()}/{localDate.getFullYear()}
 				</h3>
-				<p class="text-black/80">device</p>
+				<p class="text-black/80">coop</p>
 			</div>
 
 			<div class="flex h-full w-full flex-col items-center justify-around rounded-xl bg-slate-50">
