@@ -16,13 +16,13 @@ The goal is to make a simple mobile interface to setup your coop door over Bluet
 # :jigsaw: Functionality
 Here are the settings that the app via bluetooth allow you to edit on the coop door:
 - opening condition:
-    - ambient brightness above *200*
+    - ambient brightness above *light value*
     - AND / OR
-    - time past *8:00*
+    - time past *time*
 - closing condition:
-    - ambient brightness below *100*
+    - ambient brightness below *light value*
     - AND / OR
-    - time past *20:30*
+    - time past *time*
 - door setup
     - number of turn for opening/closing
     - test number of turn
