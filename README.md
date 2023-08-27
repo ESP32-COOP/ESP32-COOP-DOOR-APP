@@ -3,7 +3,7 @@
 
 # [ESP32-COOP-DOOR](https://coop-door.vercel.app/)
 
-Coop Door wireless control App 
+Coop Door wireless control App, powered by Bluehtoot lLow Energie
 
 
 </div>
@@ -42,10 +42,3 @@ Here is a simple demo of the current functionality
 
 <img height=400 src="README/demo.gif" alt="demo">
 
-# :clipboard: Todo
-
-- [x] Setup basic Svelte Kit
-- [x] Layout different pages
-- [x] Add interactive functionalities
-- [x] Integrate Ble lib
-- [x] Finish integration with [ESP32-COOP-DOOR-CORE](https://github.com/ESP32-COOP/ESP32-COOP-DOOR-CORE)
