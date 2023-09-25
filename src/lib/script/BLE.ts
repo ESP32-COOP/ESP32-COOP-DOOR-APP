@@ -28,6 +28,8 @@ export interface BLEType {
 	doorCloseChar?: BluetoothRemoteGATTCharacteristic;
 	doorOpenCharUUID: BluetoothCharacteristicUUID;
 	doorOpenChar?: BluetoothRemoteGATTCharacteristic;
+	moreCharUUID: BluetoothCharacteristicUUID;
+	moreChar?: BluetoothRemoteGATTCharacteristic;
 }
 
 export function iSWebBLEAvailable() {
@@ -47,7 +49,8 @@ export async function getDeviceInfo() {
 			localBLE.lightCharUUID,
 			localBLE.doorCharUUID,
 			localBLE.doorCloseCharUUID,
-			localBLE.doorOpenCharUUID
+			localBLE.doorOpenCharUUID,
+			localBLE.moreCharUUID,
 		],
 		filters: [{ namePrefix: localBLE.deviceName }]
 	};
@@ -83,6 +86,8 @@ export async function connectGATT(callback: Function = (msg: string) => {}) {
 		localBLE.doorCloseChar = await localBLE.service.getCharacteristic(localBLE.doorCloseCharUUID);
 		console.log('getting Door Open char...');
 		localBLE.doorOpenChar = await localBLE.service.getCharacteristic(localBLE.doorOpenCharUUID);
+		console.log('getting More char...');
+		localBLE.moreChar = await localBLE.service.getCharacteristic(localBLE.moreCharUUID);
 		updateBLE();
 	}
 }
@@ -188,6 +193,14 @@ export async function writeOpenDoor(mode: number, light: number, hour: number, m
 		let buffer = new Uint8Array([mode, Math.floor(light / 4), hour, minute]).buffer;
 		await localBLE.doorOpenChar.writeValue(buffer);
 	}
+}
+
+export async function writeClosePosition() {
+	if (localBLE.moreChar) {
+		let buffer = new Uint8Array([1]).buffer;
+		await localBLE.moreChar.writeValue(buffer);
+	}
+	
 }
 
 export async function readCloseDoor(): Promise<DoorConditionDTO> {

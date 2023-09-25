@@ -3,6 +3,7 @@
 	import { getDeviceInfo, getDeviceGatt, connectGATT } from '$lib/script/BLE';
 	import SnackBar from '$lib/components/SnackBar.svelte';
 	import { showToast } from '../stores';
+	import { toggleDevMode as toggleDevMode } from '$lib/script/Dev';
 	let connect_text = 'connect';
 
 
@@ -28,6 +29,20 @@
 
 		
 	}
+
+	function handleKeyPress(event: any) {
+    	if (event.key === 'D' || event.key === 'd') {
+			const devMode: Boolean = toggleDevMode();
+			if (devMode){
+				goto('device')
+				showToast({type:'success', message: "Dev mode enable" , duration:2000});
+			}else{
+				showToast({type:'info', message: "Dev mode disable" , duration:2000});
+			}
+    	}
+  	}	
+
+
 </script>
 
 <div
@@ -75,3 +90,5 @@
 	</div>
 </div>
 <SnackBar  />
+
+<svelte:window on:keydown={handleKeyPress} />

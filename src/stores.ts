@@ -22,6 +22,8 @@ export let BLE = writable<BLEType>( {
     doorCloseChar:undefined,
     doorOpenCharUUID:"cc959fff-4f84-4d08-a720-9d9156a48ed5".toLowerCase(),
     doorOpenChar:undefined,
+    moreCharUUID:"d2f9b265-a520-4d21-97ec-ce7f9aa78f22".toLowerCase(),
+    moreChar:undefined,
 });
 
 export let light = writable<LightDTO>({
@@ -57,3 +59,5 @@ export let toastQueue = writable<Toast[]>([]);
 export const showToast = (toast: Toast) => {
     toastQueue.update((toasts) => [...toasts, toast]);
   };
+
+export let devMode = writable<Boolean>(false)

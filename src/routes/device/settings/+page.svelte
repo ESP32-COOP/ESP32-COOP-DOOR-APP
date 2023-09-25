@@ -3,10 +3,11 @@
 	import OpenDoorForm from '$lib/components/OpenDoorForm.svelte';
 	import CloseDoorForm from '$lib/components/CloseDoorForm.svelte';
 	import SettingsDoorForm from '$lib/components/SettingsDoorForm.svelte';
+	import MoreSettingsForm from '$lib/components/MoreSettingsForm.svelte';
 
-
-	let page: string | null = 'close';
-	page = sessionStorage.getItem('page');
+	type menuPage ='close' | 'open' | 'door' | 'more' | null;
+	let page: menuPage  = 'close';
+	page = sessionStorage.getItem('page') as menuPage ;
 	page = page == null ? 'close' : page;
 
 	$: sessionStorage.setItem('page', page == null ? 'close' : page);
@@ -30,22 +31,28 @@
 			<!-- nav-->
 			<div class="flex gap-2 justify-start items-baseline border-b-2 border-slate-500">
 				<button
-					class="rounded-xl h-full rounded-b-none p-1 px-3 {page == 'close'
+					class="rounded-xl h-full rounded-b-none p-1 px-3 {page === 'close'
 						? '   bg-slate-500  text-white'
 						: 'bg-slate-50'} "
 					on:click={() => (page = 'close')}>close</button
 				>
 				<button
-					class="rounded-xl h-full rounded-b-none p-1 px-3 {page == 'open'
+					class="rounded-xl h-full rounded-b-none p-1 px-3 {page === 'open'
 						? '   bg-slate-500  text-white'
 						: 'bg-slate-50'} "
 					on:click={() => (page = 'open')}>open</button
 				>
 				<button
-					class="rounded-xl h-full rounded-b-none p-1 px-3 {page == 'door'
+					class="rounded-xl h-full rounded-b-none p-1 px-3 {page === 'door'
 						? '   bg-slate-500  text-white'
 						: 'bg-slate-50'} "
 					on:click={() => (page = 'door')}>door</button
+				>
+				<button
+					class="rounded-xl ml-auto h-full rounded-b-none p-1 px-3 {page === 'more'
+						? '   bg-slate-500  text-white'
+						: 'bg-slate-50'} "
+					on:click={() => (page = 'more')}>more</button
 				>
 			</div>
 			<!-- nav end-->
@@ -58,6 +65,8 @@
 				<OpenDoorForm />
 			{:else if page == 'door'}
 				<SettingsDoorForm />
+			{:else if page == 'more'}
+				<MoreSettingsForm />
 			{:else}
 				<p>error</p>
 			{/if}
