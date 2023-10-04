@@ -3,7 +3,7 @@
 
 # [ESP32 COOP DOOR](https://coop-door.vercel.app/)
 
-Coop Door wireless control App, powered by Bluehtoot lLow Energie
+Coop Door wireless control App, powered by Bluehtoot Low Energie
 
 
 </div>
